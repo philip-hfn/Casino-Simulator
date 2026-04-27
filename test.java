@@ -1,19 +1,19 @@
 
 /**
- * Beschreiben Sie hier die Klasse Simulator.
+ * Beschreiben Sie hier die Klasse test.
  * 
  * @author (Ihr Name) 
  * @version (eine Versionsnummer oder ein Datum)
  */
-public class Simulator
+public class test
 {
     // Instanzvariablen - ersetzen Sie das folgende Beispiel mit Ihren Variablen
     private int x;
 
     /**
-     * Konstruktor für Objekte der Klasse Simulator
+     * Konstruktor für Objekte der Klasse test
      */
-    public Simulator()
+    public test()
     {
         // Instanzvariable initialisieren
         x = 0;
@@ -30,5 +30,4 @@ public class Simulator
         // tragen Sie hier den Code ein
         return x + y;
     }
-    
 }
