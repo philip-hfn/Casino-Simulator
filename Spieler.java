@@ -1,19 +1,18 @@
-
 /**
- * Beschreiben Sie hier die Klasse Slot.
+ * Beschreiben Sie hier die Klasse Spieler.
  * 
  * @author (Ihr Name) 
  * @version (eine Versionsnummer oder ein Datum)
  */
-public class Slot extends Spiel
+public class Spieler
 {
     // Instanzvariablen - ersetzen Sie das folgende Beispiel mit Ihren Variablen
     private int x;
 
     /**
-     * Konstruktor für Objekte der Klasse Slot
+     * Konstruktor für Objekte der Klasse Spieler
      */
-    public Slot()
+    public Spieler()
     {
         // Instanzvariable initialisieren
         x = 0;
