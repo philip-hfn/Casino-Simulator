@@ -2,7 +2,7 @@
 
 public abstract class Spiel 
 {
-    private int einsatz;
+    public int einsatz;
     private int gewinn;
     
 }
