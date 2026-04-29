@@ -7,27 +7,17 @@
  */
 public class Simulator
 {
-    // Instanzvariablen - ersetzen Sie das folgende Beispiel mit Ihren Variablen
-    private int x;
-
+    private Hub hub;
     /**
      * Konstruktor für Objekte der Klasse Simulator
      */
     public Simulator()
     {
-        // Instanzvariable initialisieren
-        x = 0;
+        hub = new Hub();    
     }
 
-    /**
-     * Ein Beispiel einer Methode - ersetzen Sie diesen Kommentar mit Ihrem eigenen
-     * 
-     * @param  y    ein Beispielparameter für eine Methode
-     * @return        die Summe aus x und y
-     */
-    public int beispielMethode(int y)
+    public void spielerstandLaden()
     {
-        // tragen Sie hier den Code ein
-        return x + y;
+    
     }
 }
