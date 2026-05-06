@@ -29,7 +29,7 @@ public class Hub
     
     public void changeKontostand(int change)
     {
-        kontostand = kontostand - change;
+        kontostand = kontostand + change;
     }
     
     private void setKontostand(int newKontostand)
