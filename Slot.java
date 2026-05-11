@@ -5,37 +5,66 @@ public class Slot
     private int slot2;
     private int slot3;
     public int gewinn;
- 
+    private int kontostand;
+
     public Slot()
     {
         this.slot1=0;
         this.slot2=0;
-        this.slot3=0;                 
+        this.slot3=0; 
+        this.kontostand = 100;
     }
- 
+
     public int slot1()
     {    
         this.slot1 = (int)(Math.random() * 9 + 1);
         return slot1;
     }
- 
+
     public int slot2()
     {    
         this.slot2 = (int)(Math.random() * 9 + 1);
         return slot2;
     }
- 
+
     public int slot3()
     {    
         this.slot3 = (int)(Math.random() * 9 + 1);
         return slot3;
     }
+
+    public int getSlot1()
+    {
+        return slot1;
+    }
+
+    public int getSlot2()
+    {
+        return slot2;
+    }
+
+    public int getSlot3()
+    {
+        return slot3;
+    }
+
+    public int getKontostand()
+    {
+        return kontostand;
+    }
+
+    public void setKontostand(int nKontostand)
+    {
+        kontostand=nKontostand;
+    }
+
     public void drehen()
     {
         this.slot1=slot1();
         this.slot2=slot2();
         this.slot3=slot3();
     }
+
     public boolean hauptGewinn()
     {
         if(slot1 == slot2 && slot2 == slot3)
@@ -44,7 +73,7 @@ public class Slot
         }
         return false;
     }
- 
+
     public boolean kleinerGewinn()
     {
         if(slot1 == slot2 || slot2 == slot3 ||slot1==slot3)
@@ -53,7 +82,7 @@ public class Slot
         }
         return false;
     }
- 
+
     public boolean super7IchKaufDasKasino()
     {
         if(slot1 == 7 && slot2 == 7 && slot3==7)
@@ -62,7 +91,7 @@ public class Slot
         }
         return false;
     }
- 
+
     public boolean super7()
     {
         if(slot1 == 7 || slot2 == 7 || slot3 ==7)
@@ -71,7 +100,7 @@ public class Slot
         }
         return false;
     }
- 
+
     public boolean mega7()
     {
         if(slot1 == 7 && slot2 == 7 ||slot1 == 7 && slot3 == 7||slot2 == 7 && slot3 == 7)
@@ -80,7 +109,7 @@ public class Slot
         }
         return false;
     }
- 
+
     public boolean strasse()
     {
         if(slot1 + 1 == slot2 && slot2 + 1 == slot3)
@@ -89,44 +118,45 @@ public class Slot
         }
         return false;
     }
- 
+
     public int gewinnBerechnen(int nEinsatz)
     {
         int einsatz= nEinsatz;
+        kontostand=kontostand-einsatz;
         this.gewinn=0;
         drehen();
         if(strasse())
         {
-            return this.gewinn=this.gewinn + 104*einsatz;
- 
+            kontostand=kontostand + 104*einsatz;
+
         }else if(super7IchKaufDasKasino())
         {
-            return this.gewinn=this.gewinn + 729*einsatz;
- 
+            kontostand=kontostand + 729*einsatz;
+
         }
         else if(hauptGewinn())
         {
-            return this.gewinn=this.gewinn + 81*einsatz;
- 
+            kontostand=kontostand + 81*einsatz;
+
         }
         else if(mega7())
         {
-            return this.gewinn=this.gewinn + 81*einsatz;
- 
+            kontostand=kontostand + 81*einsatz;
+
         }
         else if(kleinerGewinn())
         {
-            return 0;
- 
+
         }
         else if(super7())
         {
-            return 0;
- 
+
         }
         else
         {
-            return 0;
+
         }
+        
+        return kontostand;
     }
 }
