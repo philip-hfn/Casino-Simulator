@@ -1,36 +1,18 @@
-public class Slot 
+public class Slot
 {
-    // instance variables - replace the example below with your own
     private int slot1;
     private int slot2;
     private int slot3;
-    public int gewinn;
+    private int gewinn;
     private int kontostand;
 
     public Slot()
     {
-        this.slot1=0;
-        this.slot2=0;
-        this.slot3=0; 
+        this.slot1 = 0;
+        this.slot2 = 0;
+        this.slot3 = 0;
         this.kontostand = 100;
-    }
-
-    public int slot1()
-    {    
-        this.slot1 = (int)(Math.random() * 9 + 1);
-        return slot1;
-    }
-
-    public int slot2()
-    {    
-        this.slot2 = (int)(Math.random() * 9 + 1);
-        return slot2;
-    }
-
-    public int slot3()
-    {    
-        this.slot3 = (int)(Math.random() * 9 + 1);
-        return slot3;
+        this.gewinn = 0;
     }
 
     public int getSlot1()
@@ -53,16 +35,21 @@ public class Slot
         return kontostand;
     }
 
+    public int getGewinn()
+    {
+        return gewinn;
+    }
+
     public void setKontostand(int nKontostand)
     {
-        kontostand=nKontostand;
+        kontostand = nKontostand;
     }
 
     public void drehen()
     {
-        this.slot1=slot1();
-        this.slot2=slot2();
-        this.slot3=slot3();
+        slot1 = (int)(Math.random() * 9 + 1);
+        slot2 = (int)(Math.random() * 9 + 1);
+        slot3 = (int)(Math.random() * 9 + 1);
     }
 
     public boolean hauptGewinn()
@@ -76,7 +63,7 @@ public class Slot
 
     public boolean kleinerGewinn()
     {
-        if(slot1 == slot2 || slot2 == slot3 ||slot1==slot3)
+        if(slot1 == slot2 || slot2 == slot3 ||   slot1 == slot3)
         {
             return true;
         }
@@ -85,7 +72,7 @@ public class Slot
 
     public boolean super7IchKaufDasKasino()
     {
-        if(slot1 == 7 && slot2 == 7 && slot3==7)
+        if(slot1 == 7 && slot2 == 7 && slot3 == 7)
         {
             return true;
         }
@@ -94,7 +81,7 @@ public class Slot
 
     public boolean super7()
     {
-        if(slot1 == 7 || slot2 == 7 || slot3 ==7)
+        if(slot1 == 7 || slot2 == 7 || slot3 == 7)
         {
             return true;
         }
@@ -103,7 +90,7 @@ public class Slot
 
     public boolean mega7()
     {
-        if(slot1 == 7 && slot2 == 7 ||slot1 == 7 && slot3 == 7||slot2 == 7 && slot3 == 7)
+        if((slot1 == 7 && slot2 == 7) || (slot1 == 7 && slot3 == 7) ||  (slot2 == 7 && slot3 == 7))
         {
             return true;
         }
@@ -121,42 +108,45 @@ public class Slot
 
     public int gewinnBerechnen(int nEinsatz)
     {
-        int einsatz= nEinsatz;
-        kontostand=kontostand-einsatz;
-        this.gewinn=0;
+        int einsatz = nEinsatz;
+        if(einsatz <= 0)
+        {
+            gewinn = -1;
+            return kontostand;
+        }
+        if(einsatz > kontostand)
+        {
+            gewinn = -2;
+            return kontostand;
+        }
+        kontostand = kontostand - einsatz;
         drehen();
-        if(strasse())
+        gewinn = 0;
+        if(super7IchKaufDasKasino())
         {
-            kontostand=kontostand + 104*einsatz;
-
-        }else if(super7IchKaufDasKasino())
+            gewinn = 729 * einsatz;
+        }
+        else if(strasse())
         {
-            kontostand=kontostand + 729*einsatz;
-
+            gewinn = 104 * einsatz;
         }
         else if(hauptGewinn())
         {
-            kontostand=kontostand + 81*einsatz;
-
+            gewinn = 81 * einsatz;
         }
         else if(mega7())
         {
-            kontostand=kontostand + 81*einsatz;
-
+            gewinn = 40 * einsatz;
         }
         else if(kleinerGewinn())
         {
-
+            gewinn = 10 * einsatz;
         }
         else if(super7())
         {
-
+            gewinn = 5 * einsatz;
         }
-        else
-        {
-
-        }
-        
+        kontostand = kontostand + gewinn;
         return kontostand;
     }
 }
