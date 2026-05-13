@@ -4,7 +4,7 @@ public class Slot
     private int slot2;
     private int slot3;
     private int gewinn;
-    private int kontostand;
+    public int kontostand;
 
     public Slot()
     {
