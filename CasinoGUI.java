@@ -140,7 +140,7 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
             });
 
         ergebnisLabel = new JLabel("Ergebnis: -");
-        ergebnisLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        ergebnisLabel.setFont(new Font("Arial", Font.BOLD, 24));
         ergebnisLabel.setForeground(Color.WHITE);
         add(ergebnisLabel);
 
@@ -156,23 +156,27 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         int w = getWidth();
         int h = getHeight();
 
+        // Startscreen Buttons
         rouletteButton.setBounds(w / 2 - 75, h / 2 - 120, 150, 60);
-
         slotButton.setBounds(w / 2 - 110, h / 2, 220, 60);
 
+        // Back Button
         backButton.setBounds(40, 35, 80, 30);
 
-        einsatzFeld.setBounds(w / 2 + 250, h / 2 - 60, 100, 30);
+        // Eingaben UNTER dem Zahlenfeld
+        int formX = (int)(w * 0.58);
+        int formY = (int)(h * 0.68);
 
-        geradeFeld.setBounds(w / 2 + 250, h / 2 - 10, 100, 30);
+        einsatzFeld.setBounds(formX + 130, formY, 150, 35);
+        geradeFeld.setBounds(formX + 130, formY + 60, 150, 35);
+        rotFeld.setBounds(formX + 130, formY + 120, 150, 35);
+        zahlFeld.setBounds(formX + 130, formY + 180, 150, 35);
 
-        rotFeld.setBounds(w / 2 + 250, h / 2 + 40, 100, 30);
+        // Spin Button rechts neben den Eingaben
+        spinButton.setBounds(formX + 330, formY + 65, 170, 70);
 
-        zahlFeld.setBounds(w / 2 + 250, h / 2 + 90, 100, 30);
-
-        spinButton.setBounds(w / 2 + 400, h / 2, 150, 60);
-
-        ergebnisLabel.setBounds(50, h / 2 + 80, 400, 40);
+        // Ergebnis unten links
+        ergebnisLabel.setBounds(1180, h - 90, 500, 40);
     }
 
     private BufferedImage loadImage(String path)
@@ -251,13 +255,16 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         g.drawString(konto,200,60);
         g.setFont(new Font("Arial",Font.BOLD,15));
         String einsatz = "Einsatz: ";
-        g.drawString(einsatz,855,500);
         String gerade = "Gerade/ungerade: ";
-        g.drawString(gerade,785,550);
         String rot = "Rot/Schwarz: ";
-        g.drawString(rot,815,600);
         String zahl = "Zahl: ";
-        g.drawString(zahl,880,650);
+        int formX = (int)(getWidth() * 0.58);
+        int formY = (int)(getHeight() * 0.68);
+
+        g.drawString(einsatz, formX, formY + 22);
+        g.drawString(gerade, formX - 70, formY + 82);
+        g.drawString(rot, formX - 40, formY + 142);
+        g.drawString(zahl, formX + 65, formY + 202);
         // // g.drawRect(backButton.x,backButton.y,
         // // backButton.width,backButton.height);
         // g.drawString("Back",50,55);
