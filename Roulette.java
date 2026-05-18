@@ -22,7 +22,6 @@ public class Roulette
     {
         felder=new boolean[37][4];
         spieler = nSpieler;
-        spieler.kontostand = 1000;
     }
 
     public void arrayBefuellen()
@@ -125,7 +124,7 @@ public class Roulette
 
     public void kontoAktualisieren(int gewinn)
     {
-        spieler.kontostand = spieler.kontostand + gewinn;
+        spieler.changeKontostand(gewinn);
     }
 
     public int gewinnBerechnen()

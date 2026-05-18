@@ -7,4 +7,24 @@
 public class Spieler
 {
     int kontostand;
+    
+    public Spieler ()
+    {
+        this.kontostand = 1000;
+    }
+    
+    public int getKontostand()
+    {
+        return kontostand;
+    }
+    
+    public void setKontostand(int nKontostand)
+    {
+        kontostand = nKontostand;    
+    }
+    
+    public void changeKontostand(int nKontostand)
+    {
+        kontostand = kontostand + nKontostand;    
+    }
 }
