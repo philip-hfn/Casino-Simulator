@@ -1,4 +1,3 @@
-
 import java.util.Random;
 /**
  * Beschreiben Sie hier die Klasse Roulette.
@@ -6,7 +5,7 @@ import java.util.Random;
  * @author (Ihr Name) 
  * @version (eine Versionsnummer oder ein Datum)
  */
-public class Roulette 
+public class Roulette
 {
     public int ergebnis;
     public int gewinn;
@@ -18,12 +17,12 @@ public class Roulette
     boolean kriteriumFarbeGesetzt;//gibt an ob auf Farbe gesetzt wurde
     boolean farbeGesetz;
     public int einsatz;
-    public int kontostand;
-
-    public Roulette()
+    Spieler spieler;
+    public Roulette(Spieler nSpieler)
     {
         felder=new boolean[37][4];
-        kontostand = 1000;
+        spieler = nSpieler;
+        spieler.kontostand = 1000;
     }
 
     public void arrayBefuellen()
@@ -104,10 +103,10 @@ public class Roulette
 
     public int einsatzFestlegen(int nEinsatz)
     {
-        if(nEinsatz<=kontostand)
+        if(nEinsatz<=spieler.kontostand)
         {
             einsatz = nEinsatz;
-            kontostand = kontostand - einsatz;
+            spieler.kontostand = spieler.kontostand - einsatz;
             return einsatz;
         }
         else
@@ -126,7 +125,7 @@ public class Roulette
 
     public void kontoAktualisieren(int gewinn)
     {
-        kontostand = kontostand + gewinn;
+        spieler.kontostand = spieler.kontostand + gewinn;
     }
 
     public int gewinnBerechnen()
@@ -176,7 +175,7 @@ public class Roulette
         }
         // if(ergebnisZahl == 0)//Muss noch überprüft werden
         // {
-        // kontostand = kontostand - einsatz;
+        // spieler.kontostand = spieler.kontostand - einsatz;
         // }
         kriteriumZahl = 0;
         return gewinn;

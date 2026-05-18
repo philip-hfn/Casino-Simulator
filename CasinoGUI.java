@@ -25,6 +25,7 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
     BufferedImage rouletteImage;
     BufferedImage backgroundImage;
     Roulette roulette;
+    Spieler spieler;
 
     // Slot
     private SlotReel slotReel1;
@@ -34,12 +35,23 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
     private JButton drehenButton;
     private JTextField slotEinsatzFeld;
     private JLabel kontoLabel;
+    private JLabel slotEinsatzLabel;
     BufferedImage slotImage;
     BufferedImage[] slotBilder;
     Slot slot;
 
     public static void main(String[] args)
     {
+        try
+        {
+            UIManager.setLookAndFeel(
+                UIManager.getCrossPlatformLookAndFeelClassName()
+            );
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         new CasinoGUI(1920, 1080);
     }
 
@@ -51,19 +63,25 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         frame.setLocation(100, 100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(this);
+        frame.setResizable(true);
         frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        roulette = new Roulette();
-        roulette.kontostand = 1000;
+
+        spieler = new Spieler();
+        roulette = new Roulette(spieler);
+        spieler.kontostand = 1000;
+
         slot = new Slot();
         slot.kontostand = 1000;
+
         addMouseListener(this);
         doInitializations();
         Thread th = new Thread(this);
         th.start();
     }
 
-    // Innere Klasse für die Slot-Räder
+    // ─── Innere Klasse für die Slot-Räder ────────────────────────────────────
     class SlotReel extends JPanel
     {
         private BufferedImage currentImage;
@@ -90,11 +108,78 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         }
     }
 
+    // ─── Style-Hilfsmethode (aus Version 1) ──────────────────────────────────
+    private void styleButton(JButton button)
+    {
+        button.setBackground(new Color(217, 131, 53));
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 22));
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+    }
+
+    // ─── Dynamisches Layout (aus Version 1) ──────────────────────────────────
+    private void updateLayoutPositions()
+    {
+        int w = getWidth();
+        int h = getHeight();
+
+        // Hauptmenü-Buttons
+        rouletteButton.setBounds(w / 2 - 90,  h / 2 - 60, 180, 65);
+        slotButton.setBounds    (w / 2 - 130, h / 2 + 40, 260, 65);
+
+        // Back-Button
+        backButton.setBounds(40, 35, 80, 30);
+
+        // ── Roulette-Formular ─────────────────────────────────────────────────
+        int formX = (int)(w * 0.58);
+        int formY = (int)(h * 0.68);
+
+        einsatzFeld.setBounds(formX + 130, formY,       150, 35);
+        geradeFeld .setBounds(formX + 130, formY + 60,  150, 35);
+        rotFeld    .setBounds(formX + 130, formY + 120, 150, 35);
+        zahlFeld   .setBounds(formX + 130, formY + 180, 150, 35);
+
+        spinButton.setBounds(formX + 330, formY + 65, 170, 70);
+
+        ergebnisLabel.setBounds(w - 740, h - 90, 500, 40);
+
+        // ── Slot-Komponenten ─────────────────────────────────────────────────
+        // Roulette-Räder: zentriert, etwas über Bildmitte
+        int reelY  = (int)(h * 0.35);
+        int reelW  = (int)(w * 0.08);
+        int reelH  = reelW;
+        int gapX   = (int)(w * 0.01);
+        int totalW = 3 * reelW + 2 * gapX;
+        int startX = (w - totalW) / 2;
+
+        slotReel1.setBounds(startX,              reelY, reelW, reelH);
+        slotReel2.setBounds(startX + reelW + gapX,       reelY, reelW, reelH);
+        slotReel3.setBounds(startX + 2 * (reelW + gapX), reelY, reelW, reelH);
+
+        // Kontostand-Label oben mittig
+        kontoLabel.setBounds(w / 2 - 200, (int)(h * 0.09), 400, 40);
+
+        // Gewinn-Label unter den Rädern
+        gewinnLabel.setBounds(w / 2 - 200, reelY + reelH + 20, 400, 40);
+
+        // Einsatz-Label und -Feld
+        int inputY = reelY + reelH + 80;
+        slotEinsatzLabel.setBounds(w / 2 - 120, inputY, 80,  35);
+        slotEinsatzFeld .setBounds(w / 2 - 30,  inputY, 100, 35);
+
+        // Drehen-Button
+        drehenButton.setBounds(w / 2 - 100, inputY + 55, 200, 55);
+    }
+
+    // ─── Initialisierung aller Komponenten ───────────────────────────────────
     private void doInitializations()
     {
-        // === BILDER LADEN ===
-        rouletteImage  = loadImage("pics/roulette.png");
-        slotImage      = loadImage("pics/slot.png");
+        // Bilder laden
+        rouletteImage   = loadImage("pics/roulette.png");
+        slotImage       = loadImage("pics/slot.png");
         backgroundImage = loadImage("pics/background.png");
 
         slotBilder = new BufferedImage[10];
@@ -103,123 +188,98 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
             slotBilder[i] = loadImage("pics/slot" + i + ".png");
         }
 
-        // === HAUPTMENÜ BUTTONS ===
+        // === Hauptmenü ===
         rouletteButton = new JButton("Roulette");
-        rouletteButton.setBounds(570, 390, 150, 60);
-        rouletteButton.setBackground(new Color(217, 131, 53));
-        rouletteButton.setForeground(Color.WHITE);
-        rouletteButton.setFont(new Font("Arial", Font.BOLD, 22));
-        rouletteButton.setFocusPainted(false);
-        rouletteButton.setBorderPainted(false);
         add(rouletteButton);
+        styleButton(rouletteButton);
 
         slotButton = new JButton("Slot-Maschine");
-        slotButton.setBounds(535, 490, 220, 60);
-        slotButton.setBackground(new Color(217, 131, 53));
-        slotButton.setForeground(Color.WHITE);
-        slotButton.setFont(new Font("Arial", Font.BOLD, 22));
-        slotButton.setFocusPainted(false);
-        slotButton.setBorderPainted(false);
         add(slotButton);
+        styleButton(slotButton);
 
         backButton = new JButton("Back");
-        backButton.setBounds(40, 35, 80, 30);
         backButton.setBackground(Color.WHITE);
         backButton.setForeground(Color.BLACK);
         backButton.setFont(new Font("Arial", Font.BOLD, 15));
         backButton.setFocusPainted(false);
         backButton.setBorderPainted(false);
+        backButton.setOpaque(true);
+        backButton.setContentAreaFilled(true);
         add(backButton);
 
         rouletteButton.addActionListener(e -> { screen = 1; updateComponents(); });
-        slotButton.addActionListener(e ->     { screen = 2; updateComponents(); });
-        backButton.addActionListener(e ->     { screen = 0; updateComponents(); });
+        slotButton    .addActionListener(e -> { screen = 2; updateComponents(); });
+        backButton    .addActionListener(e -> { screen = 0; updateComponents(); });
 
-        // === ROULETTE KOMPONENTEN ===
+        // === Roulette ===
         einsatzFeld = new JTextField("Einsatz");
-        einsatzFeld.setBounds(930, 480, 100, 30);
         add(einsatzFeld);
 
         geradeFeld = new JTextField("gerade/ungerade");
-        geradeFeld.setBounds(930, 530, 100, 30);
         add(geradeFeld);
 
         rotFeld = new JTextField("rot/schwarz");
-        rotFeld.setBounds(930, 580, 100, 30);
         add(rotFeld);
 
         zahlFeld = new JTextField("10");
-        zahlFeld.setBounds(930, 630, 100, 30);
         add(zahlFeld);
 
         spinButton = new JButton("SPIN");
-        spinButton.setBounds(1080, 540, 150, 60);
         spinButton.setBackground(Color.RED);
         spinButton.setForeground(Color.WHITE);
         spinButton.setFont(new Font("Arial", Font.BOLD, 22));
         spinButton.setFocusPainted(false);
         spinButton.setBorderPainted(false);
+        spinButton.setOpaque(true);
+        spinButton.setContentAreaFilled(true);
         add(spinButton);
 
         spinButton.addActionListener(e -> {
             int gewinn = roulette.spieldurchfuehren(einsatzR(), rotR(), geradeR(), zahlR());
-            int zahl = roulette.ergebnis;
+            int zahl   = roulette.ergebnis;
             ergebnisLabel.setText("Zahl: " + zahl + " | Gewinn: " + gewinn + "$");
         });
 
         ergebnisLabel = new JLabel("Ergebnis: -");
-        ergebnisLabel.setBounds(50, 550, 400, 40);
-        ergebnisLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        ergebnisLabel.setFont(new Font("Arial", Font.BOLD, 24));
         ergebnisLabel.setForeground(Color.WHITE);
         add(ergebnisLabel);
 
-        // === SLOT KOMPONENTEN ===
+        // === Slot ===
         slotReel1 = new SlotReel();
-        slotReel1.setBounds(620, 380, 150, 150);
         slotReel1.setImage(slotBilder[1]);
         add(slotReel1);
 
         slotReel2 = new SlotReel();
-        slotReel2.setBounds(800, 380, 150, 150);
         slotReel2.setImage(slotBilder[1]);
         add(slotReel2);
 
         slotReel3 = new SlotReel();
-        slotReel3.setBounds(980, 380, 150, 150);
         slotReel3.setImage(slotBilder[1]);
         add(slotReel3);
 
         gewinnLabel = new JLabel("Drücke auf Drehen!", SwingConstants.CENTER);
-        gewinnLabel.setBounds(600, 560, 400, 40);
         gewinnLabel.setFont(new Font("Arial", Font.BOLD, 22));
         gewinnLabel.setForeground(Color.WHITE);
         add(gewinnLabel);
 
         kontoLabel = new JLabel("Kontostand: " + slot.getKontostand() + "€");
-        kontoLabel.setBounds(600, 100, 400, 40);
         kontoLabel.setFont(new Font("Arial", Font.BOLD, 25));
         kontoLabel.setForeground(Color.WHITE);
         add(kontoLabel);
 
-        JLabel slotEinsatzLabel = new JLabel("Einsatz:");
-        slotEinsatzLabel.setBounds(660, 620, 80, 35);
+        slotEinsatzLabel = new JLabel("Einsatz:");
         slotEinsatzLabel.setFont(new Font("Arial", Font.BOLD, 18));
         slotEinsatzLabel.setForeground(Color.WHITE);
         add(slotEinsatzLabel);
 
         slotEinsatzFeld = new JTextField("10");
-        slotEinsatzFeld.setBounds(750, 620, 100, 35);
         slotEinsatzFeld.setFont(new Font("Arial", Font.PLAIN, 18));
         add(slotEinsatzFeld);
 
         drehenButton = new JButton("Drehen");
-        drehenButton.setBounds(700, 680, 200, 55);
-        drehenButton.setBackground(new Color(217, 131, 53));
-        drehenButton.setForeground(Color.WHITE);
-        drehenButton.setFont(new Font("Arial", Font.BOLD, 22));
-        drehenButton.setFocusPainted(false);
-        drehenButton.setBorderPainted(false);
         add(drehenButton);
+        styleButton(drehenButton);
 
         drehenButton.addActionListener(e -> {
             int einsatz = Integer.parseInt(slotEinsatzFeld.getText());
@@ -236,45 +296,40 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
             starteAnimation(slotReel2, ziel2, 400);
             starteAnimation(slotReel3, ziel3, 800);
 
-            // Ergebnis anzeigen nachdem alle 3 Räder gestoppt haben
-            // 800ms Versatz + 30 Runden * 80ms max Delay + 500ms Puffer
             int gesamtZeit = 800 + 30 * 80 + 500;
             Timer ergebnisTimer = new Timer(gesamtZeit, ev -> {
                 kontoLabel.setText("Kontostand: " + slot.getKontostand() + "€");
-                if (slot.super7IchKaufDasKasino())  gewinnLabel.setText("🎰 JACKPOT 777 !!!");
-                else if (slot.hauptGewinn())         gewinnLabel.setText("Großer Gewinn!");
-                else if (slot.kleinerGewinn())       gewinnLabel.setText("Kleiner Gewinn!");
-                else                                 gewinnLabel.setText("Leider verloren!");
+                if      (slot.super7IchKaufDasKasino()) gewinnLabel.setText("🎰 JACKPOT 777 !!!");
+                else if (slot.hauptGewinn())             gewinnLabel.setText("Großer Gewinn!");
+                else if (slot.kleinerGewinn())           gewinnLabel.setText("Kleiner Gewinn!");
+                else                                     gewinnLabel.setText("Leider verloren!");
                 drehenButton.setEnabled(true);
             });
             ergebnisTimer.setRepeats(false);
             ergebnisTimer.start();
         });
 
-        setVisible(true);
         updateComponents();
     }
 
+    // ─── Slot-Animations-Methode (aus Version 2) ─────────────────────────────
     private void starteAnimation(SlotReel reel, int zielZahl, int verzoegerung)
     {
-        int[] counter      = {0};
+        int[] counter       = {0};
         int[] geschwindigkeit = {50};
 
         Timer timer = new Timer(geschwindigkeit[0], null);
         timer.addActionListener(e -> {
-            // Zufälliges Bild während der Animation
             int zufallsZahl = (int)(Math.random() * 9 + 1);
             reel.setImage(slotBilder[zufallsZahl]);
             counter[0]++;
 
-            // Nach 20 Runden langsamer werden
             if (counter[0] > 20)
             {
                 geschwindigkeit[0] += 15;
                 timer.setDelay(geschwindigkeit[0]);
             }
 
-            // Nach 30 Runden auf Zielbild stoppen
             if (counter[0] > 30)
             {
                 reel.setImage(slotBilder[zielZahl]);
@@ -282,7 +337,6 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
             }
         });
 
-        // Versetzter Start für jedes Rad
         Timer startTimer = new Timer(verzoegerung, e -> timer.start());
         startTimer.setRepeats(false);
         startTimer.start();
@@ -316,6 +370,7 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
     public void paintComponent(Graphics g)
     {
         super.paintComponent(g);
+        updateLayoutPositions();   // dynamisches Layout bei jedem Frame
         if (screen == 0) drawStartscreen(g);
         if (screen == 1) drawRoulette(g);
         if (screen == 2) drawSlot(g);
@@ -328,15 +383,21 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
 
     private void drawRoulette(Graphics g)
     {
-        g.drawImage(rouletteImage, 0, 0, getWidth(), getHeight(), this);
+        int w = getWidth();
+        int h = getHeight();
+        g.drawImage(rouletteImage, 0, 0, w, h, this);
+
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 30));
-        g.drawString("Kontostand: " + roulette.kontostand + " $", 200, 60);
+        g.drawString("Kontostand: " + spieler.kontostand + " $", 200, 60);
+
         g.setFont(new Font("Arial", Font.BOLD, 15));
-        g.drawString("Einsatz: ", 855, 500);
-        g.drawString("Gerade/ungerade: ", 785, 550);
-        g.drawString("Rot/Schwarz: ", 815, 600);
-        g.drawString("Zahl: ", 880, 650);
+        int formX = (int)(w * 0.58);
+        int formY = (int)(h * 0.68);
+        g.drawString("Einsatz: ",          formX,       formY + 22);
+        g.drawString("Gerade/ungerade: ",  formX - 70,  formY + 82);
+        g.drawString("Rot/Schwarz: ",      formX - 40,  formY + 142);
+        g.drawString("Zahl: ",             formX + 65,  formY + 202);
     }
 
     private void drawSlot(Graphics g)
@@ -346,80 +407,34 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
 
     private void updateComponents()
     {
-        if (screen == 0) // Hauptmenü
-        {
-            rouletteButton.setVisible(true);
-            slotButton.setVisible(true);
-            backButton.setVisible(false);
-            einsatzFeld.setVisible(false);
-            rotFeld.setVisible(false);
-            geradeFeld.setVisible(false);
-            zahlFeld.setVisible(false);
-            spinButton.setVisible(false);
-            ergebnisLabel.setVisible(false);
-            slotReel1.setVisible(false);
-            slotReel2.setVisible(false);
-            slotReel3.setVisible(false);
-            gewinnLabel.setVisible(false);
-            drehenButton.setVisible(false);
-            slotEinsatzFeld.setVisible(false);
-            kontoLabel.setVisible(false);
-        }
-        else if (screen == 1) // Roulette
-        {
-            rouletteButton.setVisible(false);
-            slotButton.setVisible(false);
-            backButton.setVisible(true);
-            einsatzFeld.setVisible(true);
-            rotFeld.setVisible(true);
-            geradeFeld.setVisible(true);
-            zahlFeld.setVisible(true);
-            spinButton.setVisible(true);
-            ergebnisLabel.setVisible(true);
-            slotReel1.setVisible(false);
-            slotReel2.setVisible(false);
-            slotReel3.setVisible(false);
-            gewinnLabel.setVisible(false);
-            drehenButton.setVisible(false);
-            slotEinsatzFeld.setVisible(false);
-            kontoLabel.setVisible(false);
-        }
-        else if (screen == 2) // Slot
-        {
-            rouletteButton.setVisible(false);
-            slotButton.setVisible(false);
-            backButton.setVisible(true);
-            einsatzFeld.setVisible(false);
-            rotFeld.setVisible(false);
-            geradeFeld.setVisible(false);
-            zahlFeld.setVisible(false);
-            spinButton.setVisible(false);
-            ergebnisLabel.setVisible(false);
-            slotReel1.setVisible(true);
-            slotReel2.setVisible(true);
-            slotReel3.setVisible(true);
-            gewinnLabel.setVisible(true);
-            drehenButton.setVisible(true);
-            slotEinsatzFeld.setVisible(true);
-            kontoLabel.setVisible(true);
-        }
+        boolean isHub     = screen == 0;
+        boolean isRoulette = screen == 1;
+        boolean isSlot    = screen == 2;
+
+        rouletteButton.setVisible(isHub);
+        slotButton    .setVisible(isHub);
+        backButton    .setVisible(!isHub);
+
+        // Roulette
+        einsatzFeld  .setVisible(isRoulette);
+        rotFeld      .setVisible(isRoulette);
+        geradeFeld   .setVisible(isRoulette);
+        zahlFeld     .setVisible(isRoulette);
+        spinButton   .setVisible(isRoulette);
+        ergebnisLabel.setVisible(isRoulette);
+
+        // Slot
+        slotReel1       .setVisible(isSlot);
+        slotReel2       .setVisible(isSlot);
+        slotReel3       .setVisible(isSlot);
+        gewinnLabel     .setVisible(isSlot);
+        drehenButton    .setVisible(isSlot);
+        slotEinsatzFeld .setVisible(isSlot);
+        slotEinsatzLabel.setVisible(isSlot);
+        kontoLabel      .setVisible(isSlot);
     }
 
-    public void mousePressed(MouseEvent e)
-    {
-        int x = e.getX();
-        int y = e.getY();
-        if (screen == 0)
-        {
-            if (rouletteButton.contains(x, y)) { screen = 1; updateComponents(); }
-            if (slotButton.contains(x, y))     { screen = 2; updateComponents(); }
-        }
-        else
-        {
-            if (backButton.contains(x, y)) { screen = 0; updateComponents(); }
-        }
-    }
-
+    public void mousePressed(MouseEvent e)  {}
     public void mouseClicked(MouseEvent e)  {}
     public void mouseReleased(MouseEvent e) {}
     public void mouseEntered(MouseEvent e)  {}
