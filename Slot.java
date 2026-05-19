@@ -4,38 +4,22 @@ public class Slot
     private int slot2;
     private int slot3;
     private int gewinn;
-    public int kontostand;
-    Spieler spieler;
+    private Spieler spieler;
+
     public Slot(Spieler nSpieler)
     {
-        this.slot1 = 0;
-        this.slot2 = 0;
-        this.slot3 = 0;
-        this.kontostand = 100;
-        this.gewinn = 0;
-        spieler = nSpieler;
+        this.slot1   = 0;
+        this.slot2   = 0;
+        this.slot3   = 0;
+        this.gewinn  = 0;
+        this.spieler = nSpieler;
     }
 
-    public int getSlot1()
-    {
-        return slot1;
-    }
+    public int getSlot1()  { return slot1;  }
+    public int getSlot2()  { return slot2;  }
+    public int getSlot3()  { return slot3;  }
+    public int getGewinn() { return gewinn; }
 
-    public int getSlot2()
-    {
-        return slot2;
-    }
-
-    public int getSlot3()
-    {
-        return slot3;
-    }
-    
-    public int getGewinn()
-    {
-        return gewinn;
-    }
-    
     public void drehen()
     {
         slot1 = (int)(Math.random() * 9 + 1);
@@ -45,108 +29,79 @@ public class Slot
 
     public boolean hauptGewinn()
     {
-        if(slot1 == slot2 && slot2 == slot3)
-        {
-            return true;
-        }
-        return false;
+        return slot1 == slot2 && slot2 == slot3;
     }
 
     public boolean kleinerGewinn()
     {
-        if(slot1 == slot2 || slot2 == slot3 ||   slot1 == slot3)
-        {
-            return true;
-        }
-        return false;
+        return slot1 == slot2 || slot2 == slot3 || slot1 == slot3;
     }
 
     public boolean super7IchKaufDasKasino()
     {
-        if(slot1 == 7 && slot2 == 7 && slot3 == 7)
-        {
-            return true;
-        }
-        return false;
+        return slot1 == 7 && slot2 == 7 && slot3 == 7;
     }
 
     public boolean super7()
     {
-        if(slot1 == 7 || slot2 == 7 || slot3 == 7)
-        {
-            return true;
-        }
-        return false;
+        return slot1 == 7 || slot2 == 7 || slot3 == 7;
     }
 
     public boolean mega7()
     {
-        if((slot1 == 7 && slot2 == 7) || (slot1 == 7 && slot3 == 7) ||  (slot2 == 7 && slot3 == 7))
-        {
-            return true;
-        }
-        return false;
+        return (slot1 == 7 && slot2 == 7)
+            || (slot1 == 7 && slot3 == 7)
+            || (slot2 == 7 && slot3 == 7);
     }
 
-    public boolean strasse()
+    public boolean bonus7()
     {
-        if(slot1 + 1 == slot2 && slot2 + 1 == slot3)
-        {
-            return true;
-        }
-        return false;
+        return (slot1 == 7 && slot2 == slot3)
+            || (slot2 == 7 && slot1 == slot3)
+            || (slot3 == 7 && slot1 == slot2);
     }
 
-    public void spielen(int nEinsatz)
+    public boolean spielen(int einsatz)
     {
-        kontoAktualisieren(gewinnBerechnen(nEinsatz));
-    }
-    
-    public int gewinnBerechnen(int nEinsatz)
-    {
-        int einsatz = nEinsatz;
-        if(einsatz <= 0)
+        if(einsatz <= 0 || einsatz > spieler.getKontostand())
         {
-            gewinn = -1;
-            return kontostand;
+            gewinn = 0;
+            return false;
         }
-        if(einsatz > kontostand)
-        {
-            gewinn = -2;
-            return kontostand;
-        }
-        kontostand = kontostand - einsatz;
+
+        spieler.changeKontostand(-einsatz);
         drehen();
-        gewinn = 0;
+
         if(super7IchKaufDasKasino())
         {
-            gewinn = 729 * einsatz;
-        }
-        else if(strasse())
-        {
-            gewinn = 104 * einsatz;
+            gewinn = 800 * einsatz;
         }
         else if(hauptGewinn())
         {
-            gewinn = 81 * einsatz;
+            gewinn = 50 * einsatz;
         }
         else if(mega7())
         {
-            gewinn = 40 * einsatz;
+            gewinn = 20 * einsatz;
+        }
+        else if(bonus7())
+        {
+            gewinn = 8 * einsatz;
         }
         else if(kleinerGewinn())
         {
-            gewinn = 10 * einsatz;
+            gewinn = 3 * einsatz;
         }
-        else if(super7())
+        else
         {
-            gewinn = 5 * einsatz;
+            gewinn = 0;
         }
-        return gewinn;
-    }
-    
-    public void kontoAktualisieren(int gewinn)
-    {
-        spieler.changeKontostand(gewinn);
+
+        if(gewinn > 0)
+        {
+            spieler.changeKontostand(gewinn);
+        }
+
+        return true;
     }
 }

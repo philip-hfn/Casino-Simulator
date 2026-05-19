@@ -75,7 +75,6 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         spieler.kontostand = 1000;
 
         slot = new Slot(spieler);
-        slot.kontostand = 1000;
 
         addMouseListener(this);
         doInitializations();
@@ -298,33 +297,52 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         add(drehenButton);
         styleButton(drehenButton);
 
-        drehenButton.addActionListener(e -> {
-            int einsatz = Integer.parseInt(slotEinsatzFeld.getText());
-            slot.spielen(einsatz);
+        drehenButton.addActionListener(e ->
+{
+    int einsatz;
+    try
+    {
+        einsatz = Integer.parseInt(slotEinsatzFeld.getText());
+    }
+    catch (NumberFormatException ex)
+    {
+        gewinnLabel.setText("Ungültige Eingabe!");
+        return;
+    }
 
-            int ziel1 = slot.getSlot1();
-            int ziel2 = slot.getSlot2();
-            int ziel3 = slot.getSlot3();
+    if (!slot.spielen(einsatz))
+    {
+        gewinnLabel.setText("Ungültiger Einsatz!");
+        return;
+    }
 
-            drehenButton.setEnabled(false);
-            gewinnLabel.setText("...");
+       System.out.println("Slot1: " + slot.getSlot1() 
+    + " | Slot2: " + slot.getSlot2() 
+    + " | Slot3: " + slot.getSlot3()
+    + " | Gewinn: " + slot.getGewinn());
 
-            starteAnimation(slotReel1, ziel1, 0);
-            starteAnimation(slotReel2, ziel2, 400);
-            starteAnimation(slotReel3, ziel3, 800);
+    int ziel1 = slot.getSlot1();
+    int ziel2 = slot.getSlot2();
+    int ziel3 = slot.getSlot3();
 
-            int gesamtZeit = 800 + 30 * 80 + 500;
-            Timer ergebnisTimer = new Timer(gesamtZeit, ev -> {
-                kontoLabel.setText("Kontostand: " + spieler.getKontostand() + "€");
-                if      (slot.super7IchKaufDasKasino()) gewinnLabel.setText("🎰 JACKPOT 777 !!!");
-                else if (slot.hauptGewinn())             gewinnLabel.setText("Großer Gewinn!");
-                else if (slot.kleinerGewinn())           gewinnLabel.setText("Kleiner Gewinn!");
-                else                                     gewinnLabel.setText("Leider verloren!");
-                drehenButton.setEnabled(true);
-            });
-            ergebnisTimer.setRepeats(false);
-            ergebnisTimer.start();
-        });
+    drehenButton.setEnabled(false);
+    gewinnLabel.setText("...");
+    starteAnimation(slotReel1, ziel1, 0);
+    starteAnimation(slotReel2, ziel2, 400);
+    starteAnimation(slotReel3, ziel3, 800);
+
+    Timer ergebnisTimer = new Timer(800 + 30 * 80 + 500, ev ->
+    {
+        kontoLabel.setText("Kontostand: " + spieler.getKontostand() + "€");
+        if      (slot.super7IchKaufDasKasino()) gewinnLabel.setText("🎰 JACKPOT 777 !!!");
+        else if (slot.hauptGewinn())            gewinnLabel.setText("Großer Gewinn!");
+        else if (slot.kleinerGewinn())          gewinnLabel.setText("Kleiner Gewinn!");
+        else                                    gewinnLabel.setText("Leider verloren!");
+        drehenButton.setEnabled(true);
+    });
+    ergebnisTimer.setRepeats(false);
+    ergebnisTimer.start();
+});
 
         updateComponents();
     }
