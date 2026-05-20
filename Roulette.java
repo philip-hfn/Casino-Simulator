@@ -20,6 +20,11 @@ public class Roulette extends Spiel
     public int einsatz;
     public boolean hauptgewinn;
     //public int kontostand;
+    private int[] rouletteOrder = {
+            0,32,15,19,4,21,2,25,17,34,6,27,13,36,
+            11,30,8,23,10,5,24,16,33,1,20,14,31,
+            9,22,18,29,7,28,12,35,3,26
+        };
     Spieler spieler;
 
     public Roulette(Spieler nSpieler)
@@ -232,7 +237,7 @@ public class Roulette extends Spiel
         einsatz = 0;
         return gewinn;
     }
-    
+
     public boolean getHauptgewinn()
     {
         if(hauptgewinn == true)
@@ -243,5 +248,23 @@ public class Roulette extends Spiel
         {
             return false;
         }
+    }
+
+    public int getWinkelIndex()
+    {
+        int index = 0;
+
+        for(int i=0;i<rouletteOrder.length;i++){
+            if(rouletteOrder[i] == ergebnis){
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+
+    public int[] getRouletteReihenfolge()
+    {
+        return rouletteOrder;
     }
 }

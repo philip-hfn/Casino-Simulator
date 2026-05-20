@@ -41,7 +41,7 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
     double ballSpeed = 0;
     int rouletteCenterX = 260;
     int rouletteCenterY = 335;
-    int ballRadius = 115;
+    int ballRadius = 135;
     boolean spinning = false;
     double targetAngle = 0;
 
@@ -162,13 +162,17 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
                         ImageIcon winGif = new ImageIcon(getClass().getResource("pics/jackpot.gif"));
                         JLabel winAnimation = new JLabel(winGif);
 
-            
-
                     }
                     int zahl = roulette.ergebnis;
-                    targetAngle = zahl * (2 * Math.PI / 37);
 
-                    ballSpeed = 0.25;
+                    double anglePerField = 2 * Math.PI / 37;
+                    double offset = -Math.PI / 2;
+
+                    int index = roulette.getWinkelIndex();
+
+                    targetAngle = -ballAngle + (Math.PI * 8) + index * anglePerField + offset;
+
+                    ballSpeed = 0.35 + Math.random()*0.1;
                     spinning = true;
                     ergebnisLabel.setText("Zahl: " + zahl + " | Gewinn: " + gewinn + "$");
                     konto.setText("Kontostand: " + spieler.getKontostand() + "$");
@@ -306,6 +310,31 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         return image;
     }
 
+    public void run1()
+    {
+        while(frame.isVisible())
+        {
+            if(spinning)
+            {
+                ballAngle += ballSpeed;
+
+                if(ballAngle >= targetAngle)
+                {
+                    ballAngle = targetAngle;
+                    ballSpeed = 0;
+                    spinning = false;
+                }
+            }
+            repaint();
+
+            try
+            {
+                Thread.sleep(10);
+            }
+            catch(Exception e){}
+        }
+    }
+
     public void run()
     {
         while(frame.isVisible())
@@ -314,14 +343,20 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
             {
                 ballAngle += ballSpeed;
 
-                ballSpeed *= 0.99;
+                // Ball langsamer machen
+                ballSpeed *= 0.985;
 
-                if(ballSpeed < 0.01)
+                // Abstand zum Ziel berechnen
+                //double diff = Math.abs(targetAngle - ballAngle);
+
+                if(ballAngle >= targetAngle)
                 {
                     ballAngle = targetAngle;
+                    ballSpeed = 0;
                     spinning = false;
                 }
             }
+
             repaint();
 
             try
