@@ -39,9 +39,9 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
 
     double ballAngle = 0;
     double ballSpeed = 0;
-    int rouletteCenterX = 330;
-    int rouletteCenterY = 400;
-    int ballRadius = 230;
+    int rouletteCenterX = 260;
+    int rouletteCenterY = 335;
+    int ballRadius = 115;
     boolean spinning = false;
     double targetAngle = 0;
 
@@ -62,13 +62,14 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         frame.add(this);
         frame.setSize(1920,1080);
         //frame.pack();//vielleicht nicht nötig!
-        frame.setVisible(true);
 
         spieler = new Spieler();
         roulette = new Roulette(spieler);   // Verbindung zur Logik
         //roulette.kontostand = 1000;  // Startgeld
         addMouseListener(this);
         doInitializations();
+        frame.setVisible(true);
+
         Thread th = new Thread(this);
         th.start();
     }
@@ -161,17 +162,9 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
                         ImageIcon winGif = new ImageIcon(getClass().getResource("pics/jackpot.gif"));
                         JLabel winAnimation = new JLabel(winGif);
 
-                        winAnimation.setBounds(900, 500, 700, 500);
-                        add(winAnimation);
-                        winAnimation.setVisible(true);
+            
 
-                        new Timer(3000, ev -> {
-                                    winAnimation.setVisible(false);
-                            }).start();
-
-                        
                     }
-
                     int zahl = roulette.ergebnis;
                     targetAngle = zahl * (2 * Math.PI / 37);
 
@@ -180,7 +173,7 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
                     ergebnisLabel.setText("Zahl: " + zahl + " | Gewinn: " + gewinn + "$");
                     konto.setText("Kontostand: " + spieler.getKontostand() + "$");
                     einsatz.setMaximum(spieler.getKontostand());
-                    
+
             });
 
         ergebnisLabel = new JLabel("Ergebnis: -");
@@ -190,7 +183,7 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         add(ergebnisLabel);
 
         rotLabel = new JLabel("Farbe: ");
-        geradeLabel = new JLabel("Gerade/ungerade: ");
+        geradeLabel = new JLabel("gerade/ungerade: ");
         zahlLabel = new JLabel("Zahl: ");
         rotLabel.setFont(new Font("Arial", Font.BOLD, 14));
         rotLabel.setForeground(Color.WHITE);

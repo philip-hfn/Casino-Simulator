@@ -82,13 +82,13 @@ public class Roulette extends Spiel
             kriteriumFarbeGesetzt = false;
             farbeGesetz = false;
         }
-        if(gerade.equals("ja"))
+        if(gerade.equals("gerade"))
         {
             kriteriumGerade = true;
             kriteriumGeradeGesetzt = true;
             farbeGesetz = false;
         }
-        else if (gerade.equals("nein"))
+        else if (gerade.equals("ungerade"))
         {
             kriteriumGerade = false;
             kriteriumGeradeGesetzt = true;
