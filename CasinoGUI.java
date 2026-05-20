@@ -4,7 +4,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.net.URL;
-
+import javax.swing.ImageIcon;
 public class CasinoGUI extends JPanel implements Runnable, MouseListener
 {
     JFrame frame;
@@ -14,6 +14,8 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
     private JButton rouletteButton;
     private JButton slotButton;
     private JButton backButton;
+    private JLabel kontostandLabel;
+    private JLabel gifLabel;
 
     // Roulette
     private JTextField einsatzFeld;
@@ -72,8 +74,7 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         roulette = new Roulette(spieler);
         spieler.kontostand = 1000;
 
-        slot = new Slot();
-        slot.kontostand = 1000;
+        slot = new Slot(spieler);
 
         addMouseListener(this);
         doInitializations();
@@ -129,6 +130,9 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         // Hauptmenü-Buttons
         rouletteButton.setBounds(w / 2 - 90,  h / 2 - 60, 180, 65);
         slotButton.setBounds    (w / 2 - 130, h / 2 + 40, 260, 65);
+        kontostandLabel.setBounds(30, 25, 300, 40);
+        // GIF unten am Rand
+        gifLabel.setBounds(w / 2 - 100, h - 220, 200, 200);
 
         // Back-Button
         backButton.setBounds(40, 35, 80, 30);
@@ -148,10 +152,10 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
 
         // ── Slot-Komponenten ─────────────────────────────────────────────────
         // Roulette-Räder: zentriert, etwas über Bildmitte
-        int reelY  = (int)(h * 0.35);
+        int reelY  = (int)(h * 0.53);
         int reelW  = (int)(w * 0.08);
         int reelH  = reelW;
-        int gapX   = (int)(w * 0.01);
+        int gapX   = (int)(w * 0.045);
         int totalW = 3 * reelW + 2 * gapX;
         int startX = (w - totalW) / 2;
 
@@ -192,6 +196,10 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         rouletteButton = new JButton("Roulette");
         add(rouletteButton);
         styleButton(rouletteButton);
+
+        ImageIcon gifIcon = new ImageIcon(getClass().getClassLoader().getResource("pics/Character.gif"));
+        gifLabel = new JLabel(gifIcon);  // <-- kein JLabel davor
+        add(gifLabel);
 
         slotButton = new JButton("Slot-Maschine");
         add(slotButton);
@@ -235,10 +243,10 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         add(spinButton);
 
         spinButton.addActionListener(e -> {
-            int gewinn = roulette.spieldurchfuehren(einsatzR(), rotR(), geradeR(), zahlR());
-            int zahl   = roulette.ergebnis;
-            ergebnisLabel.setText("Zahl: " + zahl + " | Gewinn: " + gewinn + "$");
-        });
+                    int gewinn = roulette.spieldurchfuehren(einsatzR(), rotR(), geradeR(), zahlR());
+                    int zahl   = roulette.ergebnis;
+                    ergebnisLabel.setText("Zahl: " + zahl + " | Gewinn: " + gewinn + "$");
+            });
 
         ergebnisLabel = new JLabel("Ergebnis: -");
         ergebnisLabel.setFont(new Font("Arial", Font.BOLD, 24));
@@ -263,10 +271,17 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         gewinnLabel.setForeground(Color.WHITE);
         add(gewinnLabel);
 
-        kontoLabel = new JLabel("Kontostand: " + slot.getKontostand() + "€");
+        kontoLabel = new JLabel("Kontostand: " + spieler.getKontostand() + "€");
         kontoLabel.setFont(new Font("Arial", Font.BOLD, 25));
         kontoLabel.setForeground(Color.WHITE);
         add(kontoLabel);
+
+        kontostandLabel = new JLabel("Kontostand: " + spieler.getKontostand() + "€");
+        kontostandLabel.setFont(new Font("Georgia", Font.BOLD, 22));
+        kontostandLabel.setForeground(Color.WHITE);
+        kontostandLabel.setBackground(new Color(217, 131, 53));
+        kontostandLabel.setOpaque(true);
+        add(kontostandLabel);
 
         slotEinsatzLabel = new JLabel("Einsatz:");
         slotEinsatzLabel.setFont(new Font("Arial", Font.BOLD, 18));
@@ -281,33 +296,52 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         add(drehenButton);
         styleButton(drehenButton);
 
-        drehenButton.addActionListener(e -> {
-            int einsatz = Integer.parseInt(slotEinsatzFeld.getText());
-            slot.gewinnBerechnen(einsatz);
+        drehenButton.addActionListener(e ->
+                {
+                    int einsatz;
+                    try
+                    {
+                        einsatz = Integer.parseInt(slotEinsatzFeld.getText());
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        gewinnLabel.setText("Ungültige Eingabe!");
+                        return;
+                    }
 
-            int ziel1 = slot.getSlot1();
-            int ziel2 = slot.getSlot2();
-            int ziel3 = slot.getSlot3();
+                    if (!slot.spielen(einsatz))
+                    {
+                        gewinnLabel.setText("Ungültiger Einsatz!");
+                        return;
+                    }
 
-            drehenButton.setEnabled(false);
-            gewinnLabel.setText("...");
+                    System.out.println("Slot1: " + slot.getSlot1() 
+                        + " | Slot2: " + slot.getSlot2() 
+                        + " | Slot3: " + slot.getSlot3()
+                        + " | Gewinn: " + slot.getGewinn());
 
-            starteAnimation(slotReel1, ziel1, 0);
-            starteAnimation(slotReel2, ziel2, 400);
-            starteAnimation(slotReel3, ziel3, 800);
+                    int ziel1 = slot.getSlot1();
+                    int ziel2 = slot.getSlot2();
+                    int ziel3 = slot.getSlot3();
 
-            int gesamtZeit = 800 + 30 * 80 + 500;
-            Timer ergebnisTimer = new Timer(gesamtZeit, ev -> {
-                kontoLabel.setText("Kontostand: " + slot.getKontostand() + "€");
-                if      (slot.super7IchKaufDasKasino()) gewinnLabel.setText("🎰 JACKPOT 777 !!!");
-                else if (slot.hauptGewinn())             gewinnLabel.setText("Großer Gewinn!");
-                else if (slot.kleinerGewinn())           gewinnLabel.setText("Kleiner Gewinn!");
-                else                                     gewinnLabel.setText("Leider verloren!");
-                drehenButton.setEnabled(true);
+                    drehenButton.setEnabled(false);
+                    gewinnLabel.setText("...");
+                    starteAnimation(slotReel1, ziel1, 0);
+                    starteAnimation(slotReel2, ziel2, 400);
+                    starteAnimation(slotReel3, ziel3, 800);
+
+                    Timer ergebnisTimer = new Timer(800 + 30 * 80 + 500, ev ->
+                                {
+                                    kontoLabel.setText("Kontostand: " + spieler.getKontostand() + "€");
+                                    if      (slot.super7IchKaufDasKasino()) gewinnLabel.setText("🎰 JACKPOT 777 !!!");
+                                    else if (slot.hauptGewinn())            gewinnLabel.setText("Großer Gewinn!");
+                                    else if (slot.kleinerGewinn())          gewinnLabel.setText("Kleiner Gewinn!");
+                                    else                                    gewinnLabel.setText("Leider verloren!");
+                                    drehenButton.setEnabled(true);
+                            });
+                    ergebnisTimer.setRepeats(false);
+                    ergebnisTimer.start();
             });
-            ergebnisTimer.setRepeats(false);
-            ergebnisTimer.start();
-        });
 
         updateComponents();
     }
@@ -320,22 +354,22 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
 
         Timer timer = new Timer(geschwindigkeit[0], null);
         timer.addActionListener(e -> {
-            int zufallsZahl = (int)(Math.random() * 9 + 1);
-            reel.setImage(slotBilder[zufallsZahl]);
-            counter[0]++;
+                    int zufallsZahl = (int)(Math.random() * 9 + 1);
+                    reel.setImage(slotBilder[zufallsZahl]);
+                    counter[0]++;
 
-            if (counter[0] > 20)
-            {
-                geschwindigkeit[0] += 15;
-                timer.setDelay(geschwindigkeit[0]);
-            }
+                    if (counter[0] > 20)
+                    {
+                        geschwindigkeit[0] += 15;
+                        timer.setDelay(geschwindigkeit[0]);
+                    }
 
-            if (counter[0] > 30)
-            {
-                reel.setImage(slotBilder[zielZahl]);
-                timer.stop();
-            }
-        });
+                    if (counter[0] > 30)
+                    {
+                        reel.setImage(slotBilder[zielZahl]);
+                        timer.stop();
+                    }
+            });
 
         Timer startTimer = new Timer(verzoegerung, e -> timer.start());
         startTimer.setRepeats(false);
@@ -413,7 +447,10 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
 
         rouletteButton.setVisible(isHub);
         slotButton    .setVisible(isHub);
+        kontostandLabel.setVisible(isHub);
         backButton    .setVisible(!isHub);
+        // GIF unten am Rand   
+        gifLabel.setVisible(isHub);
 
         // Roulette
         einsatzFeld  .setVisible(isRoulette);
@@ -435,13 +472,20 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
     }
 
     public void mousePressed(MouseEvent e)  {}
+
     public void mouseClicked(MouseEvent e)  {}
+
     public void mouseReleased(MouseEvent e) {}
+
     public void mouseEntered(MouseEvent e)  {}
+
     public void mouseExited(MouseEvent e)   {}
 
     private int    einsatzR() { return Integer.parseInt(einsatzFeld.getText()); }
+
     private int    zahlR()    { return Integer.parseInt(zahlFeld.getText()); }
+
     private String geradeR()  { return geradeFeld.getText(); }
+
     private String rotR()     { return rotFeld.getText(); }
 }
