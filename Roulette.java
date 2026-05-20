@@ -18,12 +18,16 @@ public class Roulette extends Spiel
     boolean kriteriumFarbeGesetzt;//gibt an ob auf Farbe gesetzt wurde
     boolean farbeGesetz;
     public int einsatz;
-    public int kontostand;
+    public boolean hauptgewinn;
+    //public int kontostand;
+    Spieler spieler;
 
-    public Roulette()
+    public Roulette(Spieler nSpieler)
     {
         felder=new boolean[37][4];
-        kontostand = 1000;
+        spieler = nSpieler;
+        arrayBefuellen();
+        //kontostand = 1000;
     }
 
     public void arrayBefuellen()
@@ -104,10 +108,11 @@ public class Roulette extends Spiel
 
     public int einsatzFestlegen(int nEinsatz)
     {
-        if(nEinsatz<=kontostand)
+        int konto = spieler.getKontostand();
+        if(nEinsatz<=konto)
         {
             einsatz = nEinsatz;
-            kontostand = kontostand - einsatz;
+            spieler.setKontostand(konto - einsatz);
             return einsatz;
         }
         else
@@ -126,7 +131,7 @@ public class Roulette extends Spiel
 
     public void kontoAktualisieren(int gewinn)
     {
-        kontostand = kontostand + gewinn;
+        spieler.setKontostand(spieler.getKontostand() + gewinn);
     }
 
     public int gewinnBerechnen()
@@ -161,6 +166,7 @@ public class Roulette extends Spiel
         if(kriteriumZahl == ergebnisZahl&&kriteriumZahl!=0)
         {
             gewinn = einsatz*36;
+            hauptgewinn = true;
         }
         if(kriteriumGerade != ergebnisGerade&&kriteriumGeradeGesetzt == true) 
         {
@@ -185,39 +191,39 @@ public class Roulette extends Spiel
 
     // public int gewinnBerechnen()
     // {
-        // int ergebnisZahl = rouletteDrehen();
-        // boolean ergebnisGerade = felder[ergebnisZahl][0];
-        // boolean ergebnisFarbe = felder[ergebnisZahl][1];
+    // int ergebnisZahl = rouletteDrehen();
+    // boolean ergebnisGerade = felder[ergebnisZahl][0];
+    // boolean ergebnisFarbe = felder[ergebnisZahl][1];
 
-        // gewinn = 0;
+    // gewinn = 0;
 
-        // if(kriteriumZahl != 0)
-        // {
-            // if(kriteriumZahl == ergebnisZahl)
-            // {
-                // gewinn = einsatz * 36;
-            // }
-        // }
-        // else
-        // {
-            // if(kriteriumGeradeGesetzt && kriteriumGerade == ergebnisGerade)
-            // {
-                // gewinn += einsatz * 2;
-            // }
+    // if(kriteriumZahl != 0)
+    // {
+    // if(kriteriumZahl == ergebnisZahl)
+    // {
+    // gewinn = einsatz * 36;
+    // }
+    // }
+    // else
+    // {
+    // if(kriteriumGeradeGesetzt && kriteriumGerade == ergebnisGerade)
+    // {
+    // gewinn += einsatz * 2;
+    // }
 
-            // if(kriteriumFarbeGesetzt && kriteriumFarbe == ergebnisFarbe)
-            // {
-                // gewinn += einsatz * 2;
-            // }
-        // }
+    // if(kriteriumFarbeGesetzt && kriteriumFarbe == ergebnisFarbe)
+    // {
+    // gewinn += einsatz * 2;
+    // }
+    // }
 
-        // kriteriumZahl = 0;
-        // return gewinn;
+    // kriteriumZahl = 0;
+    // return gewinn;
     // }
 
     public int spieldurchfuehren(int nEinsatz, String farbe, String gerade, int zahl)
     {
-        arrayBefuellen();
+        hauptgewinn = false;
         wettmoeglichkeitenAnbieten(farbe, gerade, zahl);
         einsatzFestlegen(nEinsatz);
         gewinn = gewinnBerechnen();
@@ -225,5 +231,17 @@ public class Roulette extends Spiel
         kontoAktualisieren(gewinn);
         einsatz = 0;
         return gewinn;
+    }
+    
+    public boolean getHauptgewinn()
+    {
+        if(hauptgewinn == true)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
