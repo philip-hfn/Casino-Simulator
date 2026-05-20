@@ -175,7 +175,7 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         slotEinsatzFeld .setBounds(w / 2 - 30,  inputY, 100, 35);
 
         // Drehen-Button
-        drehenButton.setBounds(w / 2 - 100, inputY + 55, 200, 55);
+        drehenButton.setBounds(w / 2 + 300, inputY -400, 55, 200);
     }
 
     // ─── Initialisierung aller Komponenten ───────────────────────────────────
@@ -292,7 +292,7 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         slotEinsatzFeld.setFont(new Font("Arial", Font.PLAIN, 18));
         add(slotEinsatzFeld);
 
-        drehenButton = new JButton("Drehen");
+        drehenButton = new JButton();
         add(drehenButton);
         styleButton(drehenButton);
 
