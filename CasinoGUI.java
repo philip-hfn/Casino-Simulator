@@ -17,7 +17,6 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
     private JButton backButton;
     private JButton spinButton;
 
-    //private JTextField einsatzFeld;
     private JTextField geradeFeld;
     private JTextField zahlFeld;
     private JTextField rotFeld;
@@ -53,20 +52,16 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
 
     public CasinoGUI()
     {
-        //this.setPreferredSize(new Dimension(w,h));//vielleicht nicht nötig!
 
         frame = new JFrame("Casino");
-        frame.setLocation(100,100);//vielleicht nicht nötig!
+        frame.setLocation(100,100);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
         frame.add(this);
         frame.setSize(1920,1080);
-        //frame.pack();//vielleicht nicht nötig!
 
         spieler = new Spieler();
-        roulette = new Roulette(spieler);   // Verbindung zur Logik
-        //roulette.kontostand = 1000;  // Startgeld
+        roulette = new Roulette(spieler);   // Verbindung zur Logik/Roulette
         addMouseListener(this);
         doInitializations();
         frame.setVisible(true);
@@ -81,22 +76,9 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         slotButton = new JButton("Slot-Maschine");
         styleButton(rouletteButton);
         styleButton(slotButton);
-        // rouletteButton.setBounds(570,390,150,60);
         add(rouletteButton);
         add(slotButton);
-        // rouletteButton.setBackground(new Color(217, 131, 53));
-        // rouletteButton.setForeground(Color.WHITE);
-        // rouletteButton.setFont(new Font("Arial", Font.BOLD, 22));
-        // rouletteButton.setFocusPainted(false);
-        // rouletteButton.setBorderPainted(false);
-
-        // slotButton.setBounds(535,490,220,60);
-        // slotButton.setBackground(new Color(217, 131, 53));
-        // slotButton.setForeground(Color.WHITE);
-        // slotButton.setFont(new Font("Arial", Font.BOLD, 22));
-        // slotButton.setFocusPainted(false);
-        // slotButton.setBorderPainted(false);
-
+        
         backButton = new JButton("Back");
         backButton.setBounds(40,35,80,30);//!!!
         backButton.setBackground(Color.WHITE);
@@ -124,29 +106,26 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
                     updateComponents();
             });
 
-        // einsatzFeld = new JTextField("Einsatz");
-        // einsatzFeld.setBounds(930, 480, 100, 30);
-        // add(einsatzFeld);
+        
 
         geradeFeld = new JTextField("-");
-        geradeFeld.setBounds(930, 530, 100, 30);//!!!
+        geradeFeld.setBounds(930, 530, 100, 30);
         styleTextField(geradeFeld);
         add(geradeFeld);
 
         rotFeld = new JTextField("-");
-        rotFeld.setBounds(930, 580, 100, 30);//!!!
+        rotFeld.setBounds(930, 580, 100, 30);
         styleTextField(rotFeld);
         add(rotFeld);
 
         zahlFeld = new JTextField("0");
-        zahlFeld.setBounds(930, 630, 100, 30);//!!!
+        zahlFeld.setBounds(930, 630, 100, 30);
         styleTextField(zahlFeld);
         add(zahlFeld);
 
-        //einsatzFeld.addActionListener(e -> einsatzR());
 
         spinButton = new JButton("SPIN");
-        spinButton.setBounds(1080, 540, 150, 60);//!!!
+        spinButton.setBounds(1080, 540, 150, 60);
         spinButton.setBackground(Color.RED);
         spinButton.setForeground(Color.WHITE);
         spinButton.setFont(new Font("Arial", Font.BOLD, 22));
@@ -206,9 +185,7 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
                     ballSpeed = 0.35 + Math.random() * 0.05;
                     spinning = true;
 
-                    // ergebnisLabel.setText("Zahl: " + zahl + " | Gewinn: " + gewinn + "$");
-                    // konto.setText("Kontostand: " + spieler.getKontostand() + "$");
-                    // einsatz.setMaximum(spieler.getKontostand());
+                    
                     int finalGewinn = gewinn;
                     int finalZahl = zahl;
                     Timer timer = new Timer(4500, event -> {
@@ -356,31 +333,6 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         return image;
     }
 
-    public void run1()
-    {
-        while(frame.isVisible())
-        {
-            if(spinning)
-            {
-                ballAngle += ballSpeed;
-
-                if(Math.abs(targetAngle - ballAngle) < 0.02)
-                {
-                    ballAngle = targetAngle;
-                    ballSpeed = 0;
-                    spinning = false;
-                }
-            }
-            repaint();
-
-            try
-            {
-                Thread.sleep(10);
-            }
-            catch(Exception e){}
-        }
-    }
-
     public void run()
     {
         while(frame.isVisible())
@@ -443,90 +395,33 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
     private void drawStartscreen(Graphics g)
     {
         g.drawImage(backgroundImage,0,0,getWidth(),getHeight(),this);
-
-        // g.setColor(Color.WHITE);
-        // g.setFont(new Font("Arial",Font.BOLD,30));
-
-        // g.drawRect(rouletteButton.x,rouletteButton.y,
-        // rouletteButton.width,rouletteButton.height);
-        // g.drawString("Roulette",530,350);
-
-        // g.drawRect(slotButton.x,slotButton.y,
-        // slotButton.width,slotButton.height);
-        // g.drawString("Slot",570,470);
     }
 
     private void drawRoulette(Graphics g)
     {
         g.drawImage(rouletteImage,0,0,getWidth(),getHeight(),this);
 
-        // g.setColor(Color.WHITE);
-        // g.setFont(new Font("Arial",Font.BOLD,30));
-        // String konto = "Kontostand: " + spieler.getKontostand() + " $";
-        // g.drawString(konto,200,60);
-        // g.setFont(new Font("Arial",Font.BOLD,15));
-        // String einsatz = "Einsatz: ";
-        // g.drawString(einsatz,855,500);
-        // String gerade = "Gerade/ungerade: ";
-        // g.drawString(gerade,785,550);
-        // String rot = "Rot/Schwarz: ";
-        // g.drawString(rot,815,600);
-        // String zahl = "Zahl: ";
-        // g.drawString(zahl,880,650);
         int ballX = (int)(rouletteCenterX + Math.cos(ballAngle) * ballRadius);
         int ballY = (int)(rouletteCenterY + Math.sin(ballAngle) * ballRadius);
 
         g.setColor(Color.WHITE);
         g.fillOval(ballX-6, ballY-6, 12, 12);
-        // // g.drawRect(backButton.x,backButton.y,
-        // // backButton.width,backButton.height);
-        // g.drawString("Back",50,55);
     }
 
     private void drawSlot(Graphics g)
     {
         g.drawImage(slotImage,0,0,getWidth(),getHeight(),this);
-        // g.setColor(Color.WHITE);
-        // g.setFont(new Font("Arial",Font.BOLD,30));
-        // g.drawRect(backButton.x,backButton.y,
-        // backButton.width,backButton.height);
-        // g.drawString("Back",50,55);
     }
 
     public void mousePressed(MouseEvent e)
     {
-        // int x = e.getX();
-        // int y = e.getY();
-
-        // if(screen == 0)
-        // {
-        // if(rouletteButton.contains(x,y))
-        // {
-        // screen = 1;
-        // updateComponents();
-        // }
-
-        // if(slotButton.contains(x,y))
-        // {
-        // screen = 2;
-        // updateComponents();
-        // }
-        // }
-        // else
-        // {
-        // if(backButton.contains(x,y))
-        // {
-        // screen = 0;
-        // updateComponents();
-        // }
-        // }
+        
     }
 
     private void updateComponents()
     {
         if(screen == 0)//Hub
         {
-            //einsatzFeld.setVisible(false);
             rotFeld.setVisible(false);
             geradeFeld.setVisible(false);
             zahlFeld.setVisible(false);
@@ -545,7 +440,6 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         }
         else if(screen == 1)//Roulette
         {
-            //einsatzFeld.setVisible(true);
             rouletteButton.setVisible(false);
             slotButton.setVisible(false);
 
@@ -565,7 +459,6 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         }
         else if(screen == 2)//Slot
         {
-            //einsatzFeld.setVisible(false);
             rotFeld.setVisible(false);
             geradeFeld.setVisible(false);
             zahlFeld.setVisible(false);
@@ -592,12 +485,6 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
 
     public void mouseExited(MouseEvent e){}
 
-    // private int einsatzR()//Einsatz Roulette
-    // {
-    // int einsatz = Integer.parseInt(einsatzFeld.getText());
-    // return einsatz;
-    // }
-
     private int zahlR()//Einsatz Roulette
     {
         int zahl = Integer.parseInt(zahlFeld.getText());
@@ -616,37 +503,4 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         return rot;
     }
 
-    // private JPanel createControlPanel() //wird noch nicht benuzt
-    // {
-    // JPanel panel = new JPanel();
-    // panel.setOpaque(false);
-    // panel.setPreferredSize(new Dimension(350, 400));
-    // GridBagLayout gbl = new GridBagLayout();
-    // panel.setLayout(gbl);
-    // GridBagConstraints c = new GridBagConstraints();
-    // c.insets = new Insets(10,10,10,10);
-    // c.fill = GridBagConstraints.HORIZONTAL;
-    // // Einsatz Slider
-    // c.gridx = 0;
-    // c.gridy = 0;
-    // panel.add(einsatzLabel, c);
-    // c.gridy = 1;
-    // panel.add(einsatz, c);
-    // // Gerade/Ungerade
-    // c.gridy = 2;
-    // panel.add(geradeFeld, c);
-    // // Rot/Schwarz
-    // c.gridy = 3;
-    // panel.add(rotFeld, c);
-    // // Zahl
-    // c.gridy = 4;
-    // panel.add(zahlFeld, c);
-    // // Spin Button
-    // c.gridy = 5;
-    // panel.add(spinButton, c);
-    // // Ergebnis
-    // c.gridy = 6;
-    // panel.add(ergebnisLabel, c);
-    // return panel;
-    // }
 }
