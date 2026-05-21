@@ -51,15 +51,27 @@ public class Roulette extends Spiel
             {
                 felder[i][0] = false;
             }
-            if(i<=18)
+            // if(i<=18)
+            // {
+            // felder[i][1] = true;
+            // }
+            // else
+            // {
+            // felder[i][1] = false;
+            // }
+            // NEU:
+            int[] rot = {1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36};
+            felder[i][1] = false; // erstmal alle schwarz
+            for(int r : rot)
             {
-                felder[i][1] = true;
-            }
-            else
-            {
-                felder[i][1] = false;
+                if(i == r)
+                {
+                    felder[i][1] = true;
+                    break;
+                }
             }
         }
+
     }
 
     /**

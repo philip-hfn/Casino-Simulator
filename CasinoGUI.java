@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.net.URL;
+import javax.swing.Timer;
 public class CasinoGUI extends JPanel implements Runnable, MouseListener
 {
     JFrame frame;
@@ -39,8 +40,8 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
 
     double ballAngle = 0;
     double ballSpeed = 0;
-    int rouletteCenterX = 260;
-    int rouletteCenterY = 335;
+    int rouletteCenterX = 258;
+    int rouletteCenterY = 333;
     int ballRadius = 135;
     boolean spinning = false;
     double targetAngle = 0;
@@ -152,33 +153,73 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         spinButton.setFocusPainted(false);
         spinButton.setBorderPainted(false);
         add(spinButton);
-        //spinButton.addActionListener(e -> roulette.spieldurchfuehren(einsatzR(), rotR(), geradeR(), zahlR()));
+
+        // spinButton.addActionListener(e ->
+        // {
+        // int gewinn = roulette.spieldurchfuehren(einsatz.getValue(), rotR(), geradeR(), zahlR());
+        // if(roulette.getHauptgewinn()==true)
+        // {
+        // ImageIcon winGif = new ImageIcon(getClass().getResource("pics/jackpot.gif"));
+        // JLabel winAnimation = new JLabel(winGif);
+
+        // }
+        // int zahl = roulette.ergebnis;
+
+        // double anglePerField = 2 * Math.PI / 37;
+        // double offset = -Math.PI / 2;
+
+        // int index = roulette.getWinkelIndex();
+        // double fullRotations = Math.PI * 10; // mind. 5 Umdrehungen
+        // targetAngle = ballAngle + fullRotations
+        // - (ballAngle % (2 * Math.PI))
+        // + index * anglePerField
+        // - Math.PI / 2          // 0 liegt bei 12 Uhr
+        // + Math.toRadians(21); // Korrektur
+        // ballSpeed = 0.35 + Math.random()*0.1;
+        // spinning = true;
+        // ergebnisLabel.setText("Zahl: " + zahl + " | Gewinn: " + gewinn + "$");
+        // konto.setText("Kontostand: " + spieler.getKontostand() + "$");
+        // einsatz.setMaximum(spieler.getKontostand());
+
+        // });
 
         spinButton.addActionListener(e ->
                 {
+                    spinButton.setEnabled(false);
                     int gewinn = roulette.spieldurchfuehren(einsatz.getValue(), rotR(), geradeR(), zahlR());
-                    if(roulette.getHauptgewinn()==true)
-                    {
-                        ImageIcon winGif = new ImageIcon(getClass().getResource("pics/jackpot.gif"));
-                        JLabel winAnimation = new JLabel(winGif);
-
-                    }
                     int zahl = roulette.ergebnis;
-
-                    double anglePerField = 2 * Math.PI / 37;
-                    double offset = -Math.PI / 2;
-
                     int index = roulette.getWinkelIndex();
 
-                    targetAngle = index * anglePerField + offset + Math.PI * 8;
-                    //targetAngle = ballAngle + (Math.PI * 8) + index * anglePerField + offset;
-                    ballSpeed = 0.35 + Math.random()*0.1;
-                    spinning = true;
-                    ergebnisLabel.setText("Zahl: " + zahl + " | Gewinn: " + gewinn + "$");
-                    konto.setText("Kontostand: " + spieler.getKontostand() + "$");
-                    einsatz.setMaximum(spieler.getKontostand());
+                    double anglePerField = 2 * Math.PI / 37;
+                    double imageOffset = -Math.PI / 2;
 
-            });
+                    double currentNormalized = ballAngle % (2 * Math.PI);
+
+                    double targetNormalized = index * anglePerField + imageOffset;
+                    if(targetNormalized < 0) targetNormalized += 2 * Math.PI;
+
+                    double delta = targetNormalized - currentNormalized;
+                    if(delta <= 0) delta += 2 * Math.PI;
+
+                    targetAngle = ballAngle + (Math.PI * 10) + delta;
+
+                    ballSpeed = 0.35 + Math.random() * 0.05;
+                    spinning = true;
+
+                    // ergebnisLabel.setText("Zahl: " + zahl + " | Gewinn: " + gewinn + "$");
+                    // konto.setText("Kontostand: " + spieler.getKontostand() + "$");
+                    // einsatz.setMaximum(spieler.getKontostand());
+                    int finalGewinn = gewinn;
+                    int finalZahl = zahl;
+                    Timer timer = new Timer(4500, event -> {
+                                    ergebnisLabel.setText("Zahl: " + finalZahl + " | Gewinn: " + finalGewinn + "$");
+                                    konto.setText("Kontostand: " + spieler.getKontostand() + "$");
+                                    einsatz.setMaximum(spieler.getKontostand());
+                                    spinButton.setEnabled(true);
+                            });
+                    timer.setRepeats(false);
+                    timer.start();
+            });  
 
         ergebnisLabel = new JLabel("Ergebnis: -");
         ergebnisLabel.setBounds(50, 550, 400, 40);//!!!
@@ -341,27 +382,35 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         {
             if(spinning)
             {
-                ballAngle += ballSpeed;
+                // Wie weit noch bis zum Ziel?
+                double remaining = targetAngle - ballAngle;
 
-                ballAngle = ballAngle % (2 * Math.PI);
-
-                ballSpeed *= 0.985;
-
-                if(ballAngle >= targetAngle)
+                if(remaining <= 0.01)
                 {
+                    // Ziel erreicht - sauber einrasten
                     ballAngle = targetAngle;
                     ballSpeed = 0;
                     spinning = false;
                 }
+                else
+                {
+                    // Geschwindigkeit abhängig von verbleibender Distanz
+                    // Je näher am Ziel, desto langsamer
+                    double naturalSpeed = Math.sqrt(remaining) * 0.04;
+
+                    // Minimum damit es nicht ewig kriecht
+                    if(naturalSpeed < 0.005) naturalSpeed = 0.005;
+
+                    // Nie schneller als Startgeschwindigkeit
+                    if(naturalSpeed > ballSpeed) naturalSpeed = ballSpeed;
+
+                    ballSpeed = naturalSpeed;
+                    ballAngle += ballSpeed;
+                }
             }
 
             repaint();
-
-            try
-            {
-                Thread.sleep(10);
-            }
-            catch(Exception e){}
+            try { Thread.sleep(10); } catch(Exception e){}
         }
     }
 
