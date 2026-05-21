@@ -334,7 +334,7 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
 
         //Kontostandsanzeige
         konto.setBounds((int)(w * 0.15), (int)(h * 0.04), 400, 50);
-        
+
         //Spielkugel im Roulette
         rouletteCenterX = (int) (w * 0.202);
         rouletteCenterY = (int) (h * 0.473);
