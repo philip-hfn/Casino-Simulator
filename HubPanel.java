@@ -37,10 +37,12 @@ public class HubPanel extends CasinoGUI
 
         rouletteButton = new JButton("Roulette");
         styleButton(rouletteButton);
+        addHoverEffect(rouletteButton);
         add(rouletteButton);
 
         slotButton = new JButton("Slot-Maschine");
         styleButton(slotButton);
+        addHoverEffect(slotButton);
         add(slotButton);
         
         shopButton = new JButton("💰 Geld aufladen");
@@ -52,6 +54,7 @@ public class HubPanel extends CasinoGUI
         shopButton.setOpaque(true);
         shopButton.setContentAreaFilled(true);
         shopButton.addActionListener(e -> openShop());
+        addHoverEffect(shopButton);
         add(shopButton);
 
         kontostandLabel = new JLabel("Kontostand: " + spieler.getKontostand() + "€");
@@ -64,13 +67,15 @@ public class HubPanel extends CasinoGUI
         rouletteButton.addActionListener(e -> screenSwitcher.switchTo(1));
         slotButton    .addActionListener(e -> screenSwitcher.switchTo(2));
         buildShopOverlay();
+        
+        
     }
 
     @Override
     protected void updateLayoutPositions(int w, int h)
     {
-        rouletteButton .setBounds(w / 2 - 90,  h / 2 - 60, 180, 65);
-        slotButton     .setBounds(w / 2 - 130, h / 2 + 40, 260, 65);
+        rouletteButton.setBounds(w / 2 - 100, h / 2 - 60, 200, 55);
+        slotButton.setBounds(w / 2 - 100, h / 2 + 20, 200, 55);
         shopButton.setBounds(30, 75, 300, 40);
         if (shopOverlay.isVisible())
         {

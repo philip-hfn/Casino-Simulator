@@ -64,13 +64,8 @@ public class SlotPanel extends CasinoGUI
             slotBilder[i] = loadImage("pics/slot" + i + ".png");
 
         backButton = new JButton("Back");
-        backButton.setBackground(Color.WHITE);
-        backButton.setForeground(Color.BLACK);
-        backButton.setFont(new Font("Arial", Font.BOLD, 15));
-        backButton.setFocusPainted(false);
-        backButton.setBorderPainted(false);
-        backButton.setOpaque(true);
-        backButton.setContentAreaFilled(true);
+        styleButton(backButton);
+        addHoverEffect(backButton);
         backButton.addActionListener(e -> screenSwitcher.switchTo(0));
         add(backButton);
 
@@ -107,6 +102,7 @@ public class SlotPanel extends CasinoGUI
 
         drehenButton = new JButton("Drehen");
         styleButton(drehenButton);
+        addHoverEffect(drehenButton);
         add(drehenButton);
 
         drehenButton.addActionListener(e ->
@@ -193,7 +189,7 @@ public class SlotPanel extends CasinoGUI
     @Override
     protected void updateLayoutPositions(int w, int h)
     {
-        backButton.setBounds(40, 35, 80, 30);
+        backButton.setBounds(30, 25, 120, 45);
 
         int reelY  = (int)(h * 0.35);
         int reelW  = (int)(w * 0.08);

@@ -14,11 +14,14 @@ public abstract class CasinoGUI extends JPanel
 
     protected void styleButton(JButton button)
     {
-        button.setBackground(new Color(217, 131, 53));
+        button.setBackground(new Color(180, 100, 30));
         button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.BOLD, 22));
+        button.setFont(new Font("Georgia", Font.BOLD, 20));
         button.setFocusPainted(false);
-        button.setBorderPainted(false);
+        button.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(255, 200, 100), 2),
+            BorderFactory.createEmptyBorder(6, 18, 6, 18)
+        ));
         button.setOpaque(true);
         button.setContentAreaFilled(true);
     }
@@ -42,4 +45,21 @@ public abstract class CasinoGUI extends JPanel
     protected abstract void initComponents();
     protected abstract void updateLayoutPositions(int w, int h);
     protected abstract void drawBackground(Graphics g);
+    
+        protected void addHoverEffect(JButton button)
+    {
+        Color normal = button.getBackground();
+        Color bright = normal.brighter();
+        button.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            public void mouseEntered(java.awt.event.MouseEvent e)
+            {
+                button.setBackground(bright);
+            }
+            public void mouseExited(java.awt.event.MouseEvent e)
+            {
+                button.setBackground(normal);
+            }
+        });
+    }
 }

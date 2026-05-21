@@ -52,13 +52,8 @@ public class RoulettePanel extends CasinoGUI implements Runnable
         rouletteImage = loadImage("pics/roulette.png");
 
         backButton = new JButton("Back");
-        backButton.setBackground(Color.WHITE);
-        backButton.setForeground(Color.BLACK);
-        backButton.setFont(new Font("Arial", Font.BOLD, 15));
-        backButton.setFocusPainted(false);
-        backButton.setBorderPainted(false);
-        backButton.setOpaque(true);
-        backButton.setContentAreaFilled(true);
+        styleButton(backButton);
+        addHoverEffect(backButton);
         backButton.addActionListener(e -> screenSwitcher.switchTo(0));
         add(backButton);
 
@@ -121,6 +116,7 @@ public class RoulettePanel extends CasinoGUI implements Runnable
         spinButton.setBorderPainted(false);
         spinButton.setOpaque(true);
         spinButton.setContentAreaFilled(true);
+        addHoverEffect(spinButton);
         add(spinButton);
 
         spinButton.addActionListener(e ->
@@ -159,7 +155,7 @@ public class RoulettePanel extends CasinoGUI implements Runnable
     @Override
     protected void updateLayoutPositions(int w, int h)
     {
-        backButton.setBounds(40, 35, 80, 30);
+        backButton.setBounds(30, 25, 120, 45);
 
         einsatz     .setBounds((int)(w * 0.72), (int)(h * 0.08), 320, 60);
         einsatzLabel.setBounds((int)(w * 0.77), (int)(h * 0.15), 300, 60);
