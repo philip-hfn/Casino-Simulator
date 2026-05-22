@@ -46,15 +46,17 @@ public class SlotPanel extends CasinoGUI
 
     private HubPanel.ScreenSwitcher screenSwitcher;
 
-    public SlotPanel(Spieler spieler, HubPanel.ScreenSwitcher screenSwitcher)
+    private BuffManager buffManager;
+
+    public SlotPanel(Spieler spieler, BuffManager buffManager, HubPanel.ScreenSwitcher screenSwitcher)
     {
         this.spieler        = spieler;
+        this.buffManager    = buffManager;
         this.screenSwitcher = screenSwitcher;
         this.slot           = new Slot(spieler);
         setLayout(null);
         initComponents();
     }
-
     @Override
     protected void initComponents()
     {
@@ -134,25 +136,48 @@ public class SlotPanel extends CasinoGUI
             int ziel2 = slot.getSlot2();
             int ziel3 = slot.getSlot3();
 
-            drehenButton.setEnabled(false);
+            int gewinnMultiplikator = 1;
+            if (buffManager.isDoubleUpAktiv()) 
+            {
+                    gewinnMultiplikator *= 2;
+            }
             gewinnLabel.setText("...");
             starteAnimation(slotReel1, ziel1,   0);
             starteAnimation(slotReel2, ziel2, 400);
             starteAnimation(slotReel3, ziel3, 800);
 
-            Timer ergebnisTimer = new Timer(800 + 30 * 80 + 500, ev ->
+            int finalMulti = gewinnMultiplikator;
+        Timer ergebnisTimer = new Timer(800 + 30 * 80 + 500, ev ->
+        {
+            // Bonus durch Buffs berechnen
+            int bonus = 0;
+            if (slot.getGewinn() > 0)
             {
-                kontoLabel.setText("Kontostand: " + spieler.getKontostand() + "€");
+                if (finalMulti > 1)
+                    bonus += slot.getGewinn() * (finalMulti - 1);
+                if (buffManager.isLucky7Aktiv()
+            && (slot.getSlot1()==7 || slot.getSlot2()==7 || slot.getSlot3()==7))
+                    bonus += slot.getGewinn() * 2;
+                if (buffManager.isJackpotBoostAktiv() && slot.super7IchKaufDasKasino())
+                    bonus += slot.getGewinn();
+            }
+            if (bonus > 0) spieler.changeKontostand(bonus);
+            buffManager.slotRundeGespielt();
 
-                if      (slot.super7IchKaufDasKasino()) gewinnLabel.setText("JACKPOT 777 !!!");
-                else if (slot.hauptGewinn())            gewinnLabel.setText("Grosser Gewinn!");
-                else if (slot.kleinerGewinn())          gewinnLabel.setText("Kleiner Gewinn!");
-                else                                    gewinnLabel.setText("Leider verloren!");
+            kontoLabel.setText("Kontostand: " + spieler.getKontostand() + "€");
 
-                drehenButton.setEnabled(true);
-            });
+            if      (slot.super7IchKaufDasKasino()) gewinnLabel.setText("🎰 JACKPOT 777 !!!" + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : ""));
+            else if (slot.hauptGewinn())            gewinnLabel.setText("Großer Gewinn!"      + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : ""));
+            else if (slot.kleinerGewinn())          gewinnLabel.setText("Kleiner Gewinn!"     + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : ""));
+            else                                    gewinnLabel.setText("Leider verloren!");
+
+            drehenButton.setEnabled(true);
+        }
+        );
+            
             ergebnisTimer.setRepeats(false);
             ergebnisTimer.start();
+    
         });
     }
 

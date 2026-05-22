@@ -9,6 +9,7 @@ public class HubPanel extends CasinoGUI
 {
     private JButton rouletteButton;
     private JButton slotButton;
+    private JButton marktplatzButton;
     private JLabel  kontostandLabel;
 
     private BufferedImage backgroundImage;
@@ -56,6 +57,12 @@ public class HubPanel extends CasinoGUI
         shopButton.addActionListener(e -> openShop());
         addHoverEffect(shopButton);
         add(shopButton);
+        
+        marktplatzButton = new JButton("🛒 Marktplatz");
+        styleButton(marktplatzButton);
+        marktplatzButton.addActionListener(e -> screenSwitcher.switchTo(3));
+        addHoverEffect(marktplatzButton);
+        add(marktplatzButton);
 
         kontostandLabel = new JLabel("Kontostand: " + spieler.getKontostand() + "€");
         kontostandLabel.setFont(new Font("Georgia", Font.BOLD, 22));
@@ -77,6 +84,7 @@ public class HubPanel extends CasinoGUI
         rouletteButton.setBounds(w / 2 - 100, h / 2 - 60, 200, 55);
         slotButton.setBounds(w / 2 - 100, h / 2 + 20, 200, 55);
         shopButton.setBounds(30, 75, 300, 40);
+        marktplatzButton.setBounds(w / 2 - 100, h / 2 + 100, 200, 55);
         if (shopOverlay.isVisible())
         {
             shopOverlay.setBounds(0, 0, w, h);
@@ -157,9 +165,9 @@ public class HubPanel extends CasinoGUI
         closeBtn.addActionListener(e -> closeShop());
         shopPanel.add(closeBtn);
 
-        addShopOption(0, "💳  Starter Paket", "1.000$", new Color(52, 120, 200));
-        addShopOption(1, "🏦  Classic Paket",  "2.500$", new Color(100, 60, 180));
-        addShopOption(2, "🎁  Premium Paket",  "5.000$", new Color(40, 167, 69));
+        addShopOption(0, "💳  Starter Paket", "1.000$", new Color(217, 131, 53));
+        addShopOption(1, "💸  Classic Paket",  "2.500$", new Color(217, 131, 53));
+        addShopOption(2, "🏦  Premium Paket",  "5.000$", new Color(217, 131, 53));
     }
 
     private void addShopOption(int index, String titel, String untertitel, Color farbe)

@@ -7,14 +7,17 @@ import java.awt.*;
  */
 public class CasinoApp implements HubPanel.ScreenSwitcher
 {
-    private JFrame    frame;
-    private JPanel    container;
+    private JFrame frame;
+    private JPanel container;
     private CardLayout cardLayout;
 
-    private Spieler       spieler;
-    private HubPanel      hubPanel;
+    private Spieler spieler;
+    private HubPanel hubPanel;
     private RoulettePanel roulettePanel;
-    private SlotPanel     slotPanel;
+    private SlotPanel slotPanel;
+    private BuffManager buffManager;
+    private Marktplatz marktplatz;
+    private MarktplatzPanel marktplatzPanel;
 
     public static void main(String[] args)
     {
@@ -29,19 +32,24 @@ public class CasinoApp implements HubPanel.ScreenSwitcher
 
     public CasinoApp(int w, int h)
     {
-        spieler = new Spieler();   // Spieler() setzt kontostand bereits auf 1000
+        spieler = new Spieler(); // Spieler() setzt kontostand bereits auf 1000
+        
+        buffManager = new BuffManager();
+        marktplatz  = new Marktplatz(spieler, buffManager);
 
-        hubPanel      = new HubPanel(spieler, this);
-        roulettePanel = new RoulettePanel(spieler, this);
-        slotPanel     = new SlotPanel(spieler, this);
+        hubPanel = new HubPanel(spieler, this);
+        roulettePanel = new RoulettePanel(spieler, buffManager, this);
+        slotPanel = new SlotPanel(spieler, buffManager, this);
+        marktplatzPanel = new MarktplatzPanel(spieler, marktplatz, buffManager, this);
 
         cardLayout = new CardLayout();
-        container  = new JPanel(cardLayout);
+        container = new JPanel(cardLayout);
         container.setPreferredSize(new Dimension(w, h));
 
-        container.add(hubPanel,      "HUB");
-        container.add(roulettePanel, "ROULETTE");
-        container.add(slotPanel,     "SLOT");
+        container.add(hubPanel,"HUB");
+        container.add(roulettePanel,"ROULETTE");
+        container.add(slotPanel,"SLOT");
+        container.add(marktplatzPanel, "MARKTPLATZ");
 
         frame = new JFrame("Casino");
         frame.setLocation(100, 100);
@@ -71,6 +79,10 @@ public class CasinoApp implements HubPanel.ScreenSwitcher
             case 2:
                 slotPanel.refresh();
                 cardLayout.show(container, "SLOT");
+                break;
+            case 3:
+                marktplatzPanel.refresh();
+                cardLayout.show(container, "MARKTPLATZ");
                 break;
         }
     }
