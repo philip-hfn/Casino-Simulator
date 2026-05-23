@@ -47,7 +47,7 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
     private int textGroesse = 0;
     private boolean textWaechst = true;
     private Timer textTimer;
-    
+
     //Sound
     SoundManager sound = new SoundManager();
 
@@ -305,10 +305,15 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
         drehenButton = new JButton();
         add(drehenButton);
         styleButton(drehenButton);
+        drehenButton.setContentAreaFilled(false);
+        drehenButton.setBorderPainted(false);
+        drehenButton.setFocusPainted(false);
+        drehenButton.setRolloverEnabled(false);
         drehenButton.setOpaque(false);
 
         drehenButton.addActionListener(e ->
                 {
+                    sound.spinEffekt();
                     int einsatz;
                     try
                     {
@@ -349,25 +354,29 @@ public class CasinoGUI extends JPanel implements Runnable, MouseListener
                                         gewinnLabel.setText("🎰 JACKPOT 777 !!!");
                                         konfettiAnimation();
                                         jackpotTextAnimation();
+                                        sound.jackpotEffekt();
                                     }
                                     else if (slot.hauptGewinn())
                                     {
                                         gewinnLabel.setText("Großer Gewinn!");
                                         konfettiAnimation();
+                                        sound.jackpotEffekt();
                                     }
                                     else if (slot.kleinerGewinn()) 
                                     {
                                         gewinnLabel.setText("Kleiner Gewinn!");
                                         konfettiAnimation();
+                                        sound.jackpotEffekt();
                                     }
                                     else                      
                                     {
                                         gewinnLabel.setText("Leider verloren!");
                                     }
+                                    drehenButton.setEnabled(true);
                             });
                     ergebnisTimer.setRepeats(false);
                     ergebnisTimer.start();
-                    drehenButton.setEnabled(true);
+
             });
 
         updateComponents();
