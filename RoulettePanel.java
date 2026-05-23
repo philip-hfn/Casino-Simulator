@@ -3,7 +3,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
- * Roulette-Panel mit verbesserter Ball-Animation (aus CasinoGUI übernommen).
+ * Grafische Oberflaeche fuer das Roulette-Spiel
+ * Implementiert Runnable, um eine fluessige Ball-Animation (60 FPS) in einem separaten Hintergrund-Thread zu berechnen
  */
 public class RoulettePanel extends CasinoGUI implements Runnable
 {
@@ -38,6 +39,13 @@ public class RoulettePanel extends CasinoGUI implements Runnable
     // ─────────────────────────────────────────────────────────────────────
     private BuffManager buffManager;
 
+    /**
+     * Konstruktor des Roulette-Panels
+     * Initialisiert alle Verknuepfungen, baut das UI auf und startet den Animations-Thread
+     * @param spieler Das Spieler-Profil fuer Guthaben-Aenderungen
+     * @param buffManager Das Buff-System zur Pruefung aktiver Gewinn-Multiplikatoren
+     * @param screenSwitcher Der Navigator für den Bildschirmwechsel
+     */
     public RoulettePanel(Spieler spieler, BuffManager buffManager, HubPanel.ScreenSwitcher screenSwitcher)
     {
         this.spieler        = spieler;
@@ -52,6 +60,9 @@ public class RoulettePanel extends CasinoGUI implements Runnable
     }   
 
     // ═══════════════════════════════════════════════════════════════════════
+    /**
+     * Erstellt, stylt und verdrahtet alle UI-Elemente wie Buttons, Slider und Textfelder
+     */
     @Override
     protected void initComponents()
     {
