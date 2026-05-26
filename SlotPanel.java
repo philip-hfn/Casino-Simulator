@@ -39,6 +39,7 @@ public class SlotPanel extends CasinoGUI
     private JLabel     gewinnLabel;
     private JButton    drehenButton;
     private JTextField slotEinsatzFeld;
+    private JSlider    slotEinsatz;
     private JLabel     slotEinsatzLabel;
     private JLabel     kontoLabel;
     private JButton    backButton;
@@ -66,7 +67,7 @@ public class SlotPanel extends CasinoGUI
 
     // ─────────────────────────────────────────────────────────────────────
     public SlotPanel(Spieler spieler, BuffManager buffManager,
-                     HubPanel.ScreenSwitcher screenSwitcher)
+    HubPanel.ScreenSwitcher screenSwitcher)
     {
         this.spieler        = spieler;
         this.buffManager    = buffManager;
@@ -121,7 +122,7 @@ public class SlotPanel extends CasinoGUI
         // Einsatz-Label – gold
         slotEinsatzLabel = new JLabel("Einsatz:");
         slotEinsatzLabel.setFont(new Font("Serif", Font.BOLD, 18));
-        slotEinsatzLabel.setForeground(new Color(184, 134, 11));
+        slotEinsatzLabel.setForeground(Color.WHITE);
         add(slotEinsatzLabel);
 
         // Einsatz-Feld – gold
@@ -129,6 +130,17 @@ public class SlotPanel extends CasinoGUI
         slotEinsatzFeld.setFont(new Font("Serif", Font.PLAIN, 18));
         slotEinsatzFeld.setBackground(new Color(184, 134, 11));
         add(slotEinsatzFeld);
+
+        //Einsatz-Slider
+        slotEinsatz = new JSlider(0, spieler.getKontostand(), spieler.getKontostand() / 2);
+        slotEinsatz.setMajorTickSpacing(500);
+        slotEinsatz.setMinorTickSpacing(10);
+        slotEinsatz.setPaintTicks(true);
+        slotEinsatz.setPaintLabels(true);
+        slotEinsatz.setBackground(Color.WHITE);
+        slotEinsatz.setForeground(Color.BLACK);
+        slotEinsatz.setFont(new Font("Arial", Font.BOLD, 14));
+        add(slotEinsatz);
 
         // Drehen-Button – transparent, liegt über dem Hebel im Bild
         drehenButton = new JButton();
@@ -140,95 +152,106 @@ public class SlotPanel extends CasinoGUI
         drehenButton.setOpaque(false);
         add(drehenButton);
 
-        drehenButton.addActionListener(e ->
-        {
-            sound.spinEffekt();
-
-            int slotEinsatz;
-            try
-            {
-                slotEinsatz = Integer.parseInt(slotEinsatzFeld.getText());
-            }
-            catch (NumberFormatException ex)
-            {
-                gewinnLabel.setText("Ungültige Eingabe!");
-                return;
-            }
-
-            if (!slot.spielen(slotEinsatz))
-            {
-                gewinnLabel.setText("Ungültiger Einsatz!");
-                return;
-            }
-
-            System.out.println("Slot1: " + slot.getSlot1()
-                + " | Slot2: " + slot.getSlot2()
-                + " | Slot3: " + slot.getSlot3()
-                + " | Gewinn: " + slot.getGewinn());
-
-            int ziel1 = slot.getSlot1();
-            int ziel2 = slot.getSlot2();
-            int ziel3 = slot.getSlot3();
-
-            // Buff-Multiplikator vor dem Drehen merken
-            int gewinnMultiplikator = 1;
-            if (buffManager.isDoubleUpAktiv()) gewinnMultiplikator *= 2;
-
-            drehenButton.setEnabled(false);
-            gewinnLabel.setText("...");
-            starteAnimation(slotReel1, ziel1,   0);
-            starteAnimation(slotReel2, ziel2, 400);
-            starteAnimation(slotReel3, ziel3, 800);
-
-            int finalMulti = gewinnMultiplikator;
-            Timer ergebnisTimer = new Timer(800 + 30 * 80 + 500, ev ->
-            {
-                // Buff-Bonus berechnen
-                int bonus = 0;
-                if (slot.getGewinn() > 0)
+        slotEinsatz.addChangeListener(e ->
                 {
-                    if (finalMulti > 1)
-                        bonus += slot.getGewinn() * (finalMulti - 1);
-                    if (buffManager.isLucky7Aktiv()
-                        && (slot.getSlot1()==7 || slot.getSlot2()==7 || slot.getSlot3()==7))
-                        bonus += slot.getGewinn() * 2;
-                    if (buffManager.isJackpotBoostAktiv() && slot.super7IchKaufDasKasino())
-                        bonus += slot.getGewinn();
-                }
-                if (bonus > 0) spieler.changeKontostand(bonus);
-                buffManager.slotRundeGespielt();
-
-                kontoLabel.setText("Kontostand: " + spieler.getKontostand() + "€");
-
-                if (slot.super7IchKaufDasKasino())
-                {
-                    gewinnLabel.setText("🎰 JACKPOT 777 !!!" + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : ""));
-                    konfettiAnimation();
-                    jackpotTextAnimation();
-                    sound.jackpotEffekt();
-                }
-                else if (slot.hauptGewinn())
-                {
-                    gewinnLabel.setText("Großer Gewinn!" + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : ""));
-                    konfettiAnimation();
-                    sound.jackpotEffekt();
-                }
-                else if (slot.kleinerGewinn())
-                {
-                    gewinnLabel.setText("Kleiner Gewinn!" + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : ""));
-                    konfettiAnimation();
-                    sound.jackpotEffekt();
-                }
-                else
-                {
-                    gewinnLabel.setText("Leider verloren!");
-                }
-
-                drehenButton.setEnabled(true);
+                    slotEinsatzLabel.setText(
+                        "Einsatz: " + slotEinsatz.getValue() + " €"
+                    );
             });
-            ergebnisTimer.setRepeats(false);
-            ergebnisTimer.start();
-        });
+
+        drehenButton.addActionListener(e ->
+                {
+                    sound.spinEffekt();
+
+                    int slotEinsatzTemp;
+                    try
+                    {
+                        //slotEinsatz = Integer.parseInt(slotEinsatzFeld.getText());
+                        slotEinsatzTemp = slotEinsatz.getValue();
+                    }
+                    catch (NumberFormatException ex)
+                    {
+                        gewinnLabel.setText("Ungültige Eingabe!");
+                        return;
+                    }
+
+                    if (!slot.spielen(slotEinsatzTemp))
+                    {
+                        gewinnLabel.setText("Ungültiger Einsatz!");
+                        return;
+                    }
+
+                    System.out.println("Slot1: " + slot.getSlot1()
+                        + " | Slot2: " + slot.getSlot2()
+                        + " | Slot3: " + slot.getSlot3()
+                        + " | Gewinn: " + slot.getGewinn());
+
+                    int ziel1 = slot.getSlot1();
+                    int ziel2 = slot.getSlot2();
+                    int ziel3 = slot.getSlot3();
+
+                    // Buff-Multiplikator vor dem Drehen merken
+                    int gewinnMultiplikator = 1;
+                    if (buffManager.isDoubleUpAktiv()) gewinnMultiplikator *= 2;
+
+                    drehenButton.setEnabled(false);
+                    gewinnLabel.setText("...");
+                    starteAnimation(slotReel1, ziel1,   0);
+                    starteAnimation(slotReel2, ziel2, 400);
+                    starteAnimation(slotReel3, ziel3, 800);
+
+                    int finalMulti = gewinnMultiplikator;
+                    Timer ergebnisTimer = new Timer(800 + 30 * 80 + 500, ev ->
+                                {
+                                    // Buff-Bonus berechnen
+                                    int bonus = 0;
+                                    if (slot.getGewinn() > 0)
+                                    {
+                                        if (finalMulti > 1)
+                                            bonus += slot.getGewinn() * (finalMulti - 1);
+                                        if (buffManager.isLucky7Aktiv()
+                                        && (slot.getSlot1()==7 || slot.getSlot2()==7 || slot.getSlot3()==7))
+                                            bonus += slot.getGewinn() * 2;
+                                        if (buffManager.isJackpotBoostAktiv() && slot.super7IchKaufDasKasino())
+                                            bonus += slot.getGewinn();
+                                    }
+                                    if (bonus > 0) spieler.changeKontostand(bonus);
+                                    buffManager.slotRundeGespielt();
+
+                                    kontoLabel.setText("Kontostand: " + spieler.getKontostand() + "€");
+                                    slotEinsatz.setMaximum(spieler.getKontostand());
+                                    slotEinsatz.setMajorTickSpacing(Math.max(1, spieler.getKontostand() / 5));
+                                    slotEinsatz.setLabelTable(
+                                        slotEinsatz.createStandardLabels(Math.max(1, spieler.getKontostand() / 5)));
+                                    if (slot.super7IchKaufDasKasino())
+                                    {
+                                        gewinnLabel.setText("🎰 JACKPOT 777 !!!" + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : ""));
+                                        konfettiAnimation();
+                                        jackpotTextAnimation();
+                                        sound.jackpotEffekt();
+                                    }
+                                    else if (slot.hauptGewinn())
+                                    {
+                                        gewinnLabel.setText("Großer Gewinn!" + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : ""));
+                                        konfettiAnimation();
+                                        sound.jackpotEffekt();
+                                    }
+                                    else if (slot.kleinerGewinn())
+                                    {
+                                        gewinnLabel.setText("Kleiner Gewinn!" + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : ""));
+                                        konfettiAnimation();
+                                        sound.jackpotEffekt();
+                                    }
+                                    else
+                                    {
+                                        gewinnLabel.setText("Leider verloren!");
+                                    }
+
+                                    drehenButton.setEnabled(true);
+                            });
+                    ergebnisTimer.setRepeats(false);
+                    ergebnisTimer.start();
+            });
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -240,31 +263,31 @@ public class SlotPanel extends CasinoGUI
         for (int i = 0; i < 100; i++)
         {
             konfettiList.add(new int[]{
-                (int)(Math.random() * getWidth()),
-                (int)(Math.random() * -200),
-                (int)(Math.random() * 5 + 3),
-                (int)(Math.random() * 2),
-                (int)(Math.random() * 15 + 5)
-            });
+                    (int)(Math.random() * getWidth()),
+                    (int)(Math.random() * -200),
+                    (int)(Math.random() * 5 + 3),
+                    (int)(Math.random() * 2),
+                    (int)(Math.random() * 15 + 5)
+                });
         }
         konfettiAktiv = true;
 
         Timer stopTimer = new Timer(4000, e ->
-        {
-            konfettiAktiv = false;
-            konfettiList.clear();
-        });
+                    {
+                        konfettiAktiv = false;
+                        konfettiList.clear();
+                });
         stopTimer.setRepeats(false);
         stopTimer.start();
 
         konfettiTimer = new Timer(30, e ->
-        {
-            for (int[] k : konfettiList)
-            {
-                k[1] += k[2];
-                if (k[1] > getHeight()) k[1] = -20;
-            }
-        });
+                {
+                    for (int[] k : konfettiList)
+                    {
+                        k[1] += k[2];
+                        if (k[1] > getHeight()) k[1] = -20;
+                    }
+            });
         konfettiTimer.start();
     }
 
@@ -278,22 +301,22 @@ public class SlotPanel extends CasinoGUI
 
         textTimer = new Timer(20, null);
         textTimer.addActionListener(e ->
-        {
-            if (textWaechst)
-            {
-                textGroesse += 3;
-                if (textGroesse >= 120) textWaechst = false;
-            }
-            else
-            {
-                textGroesse -= 3;
-                if (textGroesse <= 10)
                 {
-                    textTimer.stop();
-                    textGroesse = 0;
-                }
-            }
-        });
+                    if (textWaechst)
+                    {
+                        textGroesse += 3;
+                        if (textGroesse >= 120) textWaechst = false;
+                    }
+                    else
+                    {
+                        textGroesse -= 3;
+                        if (textGroesse <= 10)
+                        {
+                            textTimer.stop();
+                            textGroesse = 0;
+                        }
+                    }
+            });
         textTimer.start();
     }
 
@@ -307,22 +330,22 @@ public class SlotPanel extends CasinoGUI
 
         Timer timer = new Timer(geschwindigkeit[0], null);
         timer.addActionListener(e ->
-        {
-            int zufallsZahl = (int)(Math.random() * 9 + 1);
-            reel.setImage(slotBilder[zufallsZahl]);
-            counter[0]++;
+                {
+                    int zufallsZahl = (int)(Math.random() * 9 + 1);
+                    reel.setImage(slotBilder[zufallsZahl]);
+                    counter[0]++;
 
-            if (counter[0] > 20)
-            {
-                geschwindigkeit[0] += 15;
-                timer.setDelay(geschwindigkeit[0]);
-            }
-            if (counter[0] > 30)
-            {
-                reel.setImage(slotBilder[zielZahl]);
-                timer.stop();
-            }
-        });
+                    if (counter[0] > 20)
+                    {
+                        geschwindigkeit[0] += 15;
+                        timer.setDelay(geschwindigkeit[0]);
+                    }
+                    if (counter[0] > 30)
+                    {
+                        reel.setImage(slotBilder[zielZahl]);
+                        timer.stop();
+                    }
+            });
 
         Timer startTimer = new Timer(verzoegerung, e -> timer.start());
         startTimer.setRepeats(false);
@@ -350,8 +373,9 @@ public class SlotPanel extends CasinoGUI
         gewinnLabel.setBounds(w / 2 - 200, (int)(h * 0.35), 400, 40);
 
         int inputY = reelY + reelH + 120;
-        slotEinsatzLabel.setBounds(w / 2 - 120, inputY,  80,  35);
-        slotEinsatzFeld .setBounds(w / 2 - 30,  inputY, 100,  35);
+        slotEinsatzLabel.setBounds((int)(w * 0.46), (int)(h * 0.725),  200,  35);
+        //slotEinsatzFeld .setBounds(w / 2 - 30,  inputY, 100,  35);
+        slotEinsatz.setBounds((int)(w * 0.40), inputY, 250, 60);
 
         // Transparenter Button liegt über dem Hebel im Bild
         drehenButton.setBounds((int)(w * 0.735), (int)(h * 0.22), 60, (int)(h * 0.36));
@@ -402,5 +426,20 @@ public class SlotPanel extends CasinoGUI
     public void refresh()
     {
         kontoLabel.setText("Kontostand: " + spieler.getKontostand() + "€");
+        slotEinsatz.setMaximum(spieler.getKontostand());
+        int max = spieler.getKontostand();
+
+        slotEinsatz.setMaximum(max);
+
+        int schritt = Math.max(1, max / 5);
+
+        slotEinsatz.setMajorTickSpacing(schritt);
+        slotEinsatz.setLabelTable(
+            slotEinsatz.createStandardLabels(schritt));
+
+        if (slotEinsatz.getValue() > max)
+        {
+            slotEinsatz.setValue(max);
+        }
     }
 }
