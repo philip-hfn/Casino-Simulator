@@ -92,7 +92,7 @@ public class RoulettePanel extends CasinoGUI implements Runnable
         add(einsatzLabel);
 
         einsatz.addChangeListener(e ->
-            einsatzLabel.setText("Einsatz: " + einsatz.getValue() + " $"));
+                einsatzLabel.setText("Einsatz: " + einsatz.getValue() + " $"));
 
         // Wett-Felder
         geradeFeld = new JTextField("-");
@@ -142,66 +142,66 @@ public class RoulettePanel extends CasinoGUI implements Runnable
 
         // NEU: verbesserter Spin-ActionListener aus CasinoGUI
         spinButton.addActionListener(e ->
-        {
-            // Button sperren während Animation läuft
-            spinButton.setEnabled(false);
-
-            int gewinn = roulette.spieldurchfuehren(
-                einsatz.getValue(), rotR(), geradeR(), zahlR());
-
-            int zahl  = roulette.ergebnis;
-            int index = roulette.getWinkelIndex();   // Position auf dem Rad
-
-            // NEU: Zielwinkel genau auf das Roulette-Feld berechnen
-            double anglePerField   = 2 * Math.PI / 37;
-            double imageOffset     = -Math.PI / 2;
-            double currentNormalized = ballAngle % (2 * Math.PI);
-            double targetNormalized  = index * anglePerField + imageOffset;
-            if (targetNormalized < 0) targetNormalized += 2 * Math.PI;
-
-            double delta = targetNormalized - currentNormalized;
-            if (delta <= 0) delta += 2 * Math.PI;
-
-            // Mindestens 5 volle Umdrehungen + exakte Zielposition
-            targetAngle = ballAngle + (Math.PI * 10) + delta;
-            ballSpeed   = 0.35 + Math.random() * 0.05;
-            spinning    = true;
-
-            // Jackpot-GIF
-            if (roulette.getHauptgewinn())
-            {
-                ImageIcon winGif = new ImageIcon(
-                    getClass().getClassLoader().getResource("pics/jackpot.gif"));
-                JLabel winAnimation = new JLabel(winGif);
-                winAnimation.setBounds(900, 500, 700, 500);
-                add(winAnimation);
-                winAnimation.setVisible(true);
-                new Timer(3000, ev -> winAnimation.setVisible(false)).start();
-            }
-
-            // NEU: Ergebnis erst nach 4,5 Sek. anzeigen (wenn Ball gestoppt hat)
-            int finalGewinn = gewinn;
-            int finalZahl   = zahl;
-            Timer timer = new Timer(4500, event ->
-            {
-                int bonus = 0;
-                if (buffManager.isLuckySpinAktiv() && finalGewinn > 0)
                 {
-                    bonus = finalGewinn / 2;
-                    spieler.changeKontostand(bonus);
-                }
-                buffManager.rouletteRundeGespielt();
+                    // Button sperren während Animation läuft
+                    spinButton.setEnabled(false);
 
-                ergebnisLabel.setText("Zahl: " + finalZahl + " | Gewinn: " + finalGewinn
-                  + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : "") + "$");
-                konto.setText("Kontostand: " + spieler.getKontostand() + "$");
-                einsatz.setMaximum(spieler.getKontostand());
-                spinButton.setEnabled(true);
+                    int gewinn = roulette.spieldurchfuehren(
+                            einsatz.getValue(), rotR(), geradeR(), zahlR());
+
+                    int zahl  = roulette.ergebnis;
+                    int index = roulette.getWinkelIndex();   // Position auf dem Rad
+
+                    // NEU: Zielwinkel genau auf das Roulette-Feld berechnen
+                    double anglePerField   = 2 * Math.PI / 37;
+                    double imageOffset     = -Math.PI / 2;
+                    double currentNormalized = ballAngle % (2 * Math.PI);
+                    double targetNormalized  = index * anglePerField + imageOffset;
+                    if (targetNormalized < 0) targetNormalized += 2 * Math.PI;
+
+                    double delta = targetNormalized - currentNormalized;
+                    if (delta <= 0) delta += 2 * Math.PI;
+
+                    // Mindestens 5 volle Umdrehungen + exakte Zielposition
+                    targetAngle = ballAngle + (Math.PI * 10) + delta;
+                    ballSpeed   = 0.35 + Math.random() * 0.05;
+                    spinning    = true;
+
+                    // Jackpot-GIF
+                    if (roulette.getHauptgewinn())
+                    {
+                        ImageIcon winGif = new ImageIcon(
+                                getClass().getClassLoader().getResource("pics/jackpot.gif"));
+                        JLabel winAnimation = new JLabel(winGif);
+                        winAnimation.setBounds(900, 500, 700, 500);
+                        add(winAnimation);
+                        winAnimation.setVisible(true);
+                        new Timer(3000, ev -> winAnimation.setVisible(false)).start();
+                    }
+
+                    // NEU: Ergebnis erst nach 4,5 Sek. anzeigen (wenn Ball gestoppt hat)
+                    int finalGewinn = gewinn;
+                    int finalZahl   = zahl;
+                    Timer timer = new Timer(4500, event ->
+                                {
+                                    int bonus = 0;
+                                    if (buffManager.isLuckySpinAktiv() && finalGewinn > 0)
+                                    {
+                                        bonus = finalGewinn / 2;
+                                        spieler.changeKontostand(bonus);
+                                    }
+                                    buffManager.rouletteRundeGespielt();
+
+                                    ergebnisLabel.setText("Zahl: " + finalZahl + " | Gewinn: " + finalGewinn
+                                        + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : "") + "$");
+                                    refresh();
+                                    spinButton.setEnabled(true);
+                                    spinButton.setEnabled(true);
+                            }
+                        );
+                    timer.setRepeats(false);
+                    timer.start();
             }
-            );
-            timer.setRepeats(false);
-            timer.start();
-        }
         );
 
         ergebnisLabel = new JLabel("Ergebnis: -");
@@ -230,7 +230,7 @@ public class RoulettePanel extends CasinoGUI implements Runnable
         zahlLabel  .setBounds(label,           (int)(h * 0.90), 150, 35);
 
         spinButton   .setBounds((int)(w * 0.82), (int)(h * 0.76), 170, 70);
-        ergebnisLabel.setBounds((int)(w * 0.82), (int)(h * 0.86), 500, 40);
+        ergebnisLabel.setBounds((int)(w * 0.78), (int)(h * 0.86), 500, 40);
 
         konto.setBounds((int)(w * 0.15), (int)(h * 0.04), 400, 50);
 
@@ -255,8 +255,26 @@ public class RoulettePanel extends CasinoGUI implements Runnable
     // ═══════════════════════════════════════════════════════════════════════
     public void refresh()
     {
-        konto.setText("Kontostand: " + spieler.getKontostand() + "$");
-        einsatz.setMaximum(spieler.getKontostand());
+        int max = spieler.getKontostand();
+
+        konto.setText("Kontostand: " + max + "$");
+
+        einsatz.setMaximum(max);
+
+        int schritt = Math.max(1, max / 5);
+
+        einsatz.setMajorTickSpacing(schritt);
+
+        einsatz.setLabelTable(
+            einsatz.createStandardLabels(schritt)
+        );
+
+        if (einsatz.getValue() > max)
+        {
+            einsatz.setValue(max);
+        }
+
+        einsatz.repaint();
     }
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -304,6 +322,8 @@ public class RoulettePanel extends CasinoGUI implements Runnable
 
     // ─── Input-Helpers ────────────────────────────────────────────────────
     private int    zahlR()   { return Integer.parseInt(zahlFeld.getText()); }
+
     private String geradeR() { return geradeFeld.getText(); }
+
     private String rotR()    { return rotFeld.getText(); }
 }
