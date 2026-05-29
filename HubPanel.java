@@ -97,7 +97,7 @@ public class HubPanel extends CasinoGUI
         add(infoButton);
 
         //Kontostand-Anzeige
-        kontostandLabel = new JLabel("Kontostand: " + spieler.getKontostand() + "€");
+        kontostandLabel = new JLabel("Kontostand: " + spieler.getKontostand() + "$");
         kontostandLabel.setFont(new Font("Georgia", Font.BOLD, 22));
         kontostandLabel.setForeground(Color.WHITE);
         kontostandLabel.setBackground(new Color(217, 131, 53));
@@ -147,7 +147,7 @@ public class HubPanel extends CasinoGUI
      */
     public void refreshKontostand()
     {
-        kontostandLabel.setText("Kontostand: " + spieler.getKontostand() + "€");
+        kontostandLabel.setText("Kontostand: " + spieler.getKontostand() + "$");
     }
 
     /**

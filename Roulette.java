@@ -78,13 +78,13 @@ public class Roulette
      */
     public void wettmoeglichkeitenAnbieten(String farbe, String gerade, int zahl)
     {
-        if (farbe.equals("rot"))
+        if (farbe.equalsIgnoreCase("rot"))
         {
             kriteriumFarbe        = true;
             kriteriumFarbeGesetzt = true;
             farbeGesetz           = false;
         }
-        else if (farbe.equals("schwarz"))
+        else if (farbe.equalsIgnoreCase("schwarz"))
         {
             kriteriumFarbe        = false;
             kriteriumFarbeGesetzt = true;
@@ -97,13 +97,13 @@ public class Roulette
         }
 
         // NEU: akzeptiert "gerade"/"ungerade" statt "ja"/"nein"
-        if (gerade.equals("gerade"))
+        if (gerade.equalsIgnoreCase("gerade"))
         {
             kriteriumGerade        = true;
             kriteriumGeradeGesetzt = true;
             farbeGesetz            = false;
         }
-        else if (gerade.equals("ungerade"))
+        else if (gerade.equalsIgnoreCase("ungerade"))
         {
             kriteriumGerade        = false;
             kriteriumGeradeGesetzt = true;
