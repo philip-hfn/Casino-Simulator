@@ -20,6 +20,11 @@ public class RoulettePanel extends CasinoGUI implements Runnable
     // ── Steuer-Elemente ───────────────────────────────────────────────────
     private JButton spinButton;      // startet den Dreh
     private JSlider einsatz;         // Einsatzbetrag in $
+    private JButton rot;             //Dient zum angeben der Wette
+    private JButton schwarz;         //Dient zum angeben der Wette
+    private JButton gerade;          //Dient zum angeben der Wette
+    private JButton ungerade;        //Dient zum angeben der Wette
+    private JButton reset;           //Dient dazu die Wetten zu reseten
 
     // ── Anzeige-Labels ────────────────────────────────────────────────────
     private JLabel ergebnisLabel;    // zeigt Zahl und Gewinn nach dem Dreh
@@ -30,6 +35,10 @@ public class RoulettePanel extends CasinoGUI implements Runnable
     private JLabel konto;            // aktueller Kontostand
 
     private JButton backButton;      // zurueck zum Hub
+
+    // ── Roulette-Elemente ───────────────────────────────────────────────────
+    private String farbeSetzen = "-";
+    private String geradeSetzen = "-";
 
     // ── Ball-Animation (werden im Animations-Thread gelesen/geschrieben) ──
     double  ballAngle       = 0;     // aktueller Winkel des Balls in Radiant
@@ -57,7 +66,7 @@ public class RoulettePanel extends CasinoGUI implements Runnable
      * @param screenSwitcher Navigator fuer den Bildschirmwechsel
      */
     public RoulettePanel(Spieler spieler, BuffManager buffManager,
-                         HubPanel.ScreenSwitcher screenSwitcher)
+    HubPanel.ScreenSwitcher screenSwitcher)
     {
         this.spieler        = spieler;
         this.buffManager    = buffManager;
@@ -123,6 +132,83 @@ public class RoulettePanel extends CasinoGUI implements Runnable
         styleTextField(zahlFeld);
         add(zahlFeld);
 
+        rot = new JButton("Rot");
+        rot.setBackground(Color.RED);
+        rot.setForeground(Color.WHITE);
+        rot.setFont(new Font("Arial", Font.BOLD, 22));
+        rot.setFocusPainted(false);
+        rot.setBorderPainted(false);
+        rot.setOpaque(true);
+        rot.setContentAreaFilled(true);
+        addHoverEffect(rot);
+        add(rot);
+        rot.addActionListener(e ->{
+                    farbeSetzen = "rot";
+                    rot.setEnabled(false);
+                    schwarz.setEnabled(true);
+            });
+
+        schwarz = new JButton("Schwarz");
+        schwarz.setBackground(Color.BLACK);
+        schwarz.setForeground(Color.WHITE);
+        schwarz.setFont(new Font("Arial", Font.BOLD, 22));
+        schwarz.setFocusPainted(false);
+        schwarz.setBorderPainted(false);
+        schwarz.setOpaque(true);
+        schwarz.setContentAreaFilled(true);
+        addHoverEffect(schwarz);
+        add(schwarz);
+        schwarz.addActionListener(e ->{
+                    farbeSetzen = "schwarz";
+                    schwarz.setEnabled(false);
+                    rot.setEnabled(true);
+            });
+
+        gerade = new JButton("gerade");
+        gerade.setBackground(Color.WHITE);
+        gerade.setForeground(Color.BLACK);
+        gerade.setFont(new Font("Arial", Font.BOLD, 22));
+        gerade.setFocusPainted(false);
+        gerade.setBorderPainted(false);
+        gerade.setOpaque(true);
+        gerade.setContentAreaFilled(true);
+        addHoverEffect(gerade);
+        add(gerade);
+        gerade.addActionListener(e ->{
+                    geradeSetzen = "gerade";
+                    gerade.setEnabled(false);
+                    ungerade.setEnabled(true);
+            });
+
+        ungerade = new JButton("ungerade");
+        ungerade.setBackground(Color.WHITE);
+        ungerade.setForeground(Color.BLACK);
+        ungerade.setFont(new Font("Arial", Font.BOLD, 22));
+        ungerade.setFocusPainted(false);
+        ungerade.setBorderPainted(false);
+        ungerade.setOpaque(true);
+        ungerade.setContentAreaFilled(true);
+        addHoverEffect(ungerade);
+        add(ungerade);
+        ungerade.addActionListener(e -> {
+                    geradeSetzen = "ungerade";
+                    ungerade.setEnabled(false);
+                    gerade.setEnabled(true);
+            });
+
+        reset = new JButton("Reset");
+        styleButton(reset);
+        addHoverEffect(reset);
+        add(reset);
+        reset.addActionListener(e -> {
+                    geradeSetzen = "-";
+                    farbeSetzen = "-";
+                    rot.setEnabled(true);
+                    schwarz.setEnabled(true);
+                    gerade.setEnabled(true);
+                    ungerade.setEnabled(true);
+            });
+
         // ── Beschriftungs-Labels ──────────────────────────────────────────
         geradeLabel = new JLabel("Gerade/ungerade: ");
         geradeLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -157,71 +243,71 @@ public class RoulettePanel extends CasinoGUI implements Runnable
         add(spinButton);
 
         spinButton.addActionListener(e ->
-        {
-            // Button waehrend der Animation sperren, um Doppelklicks zu verhindern
-            spinButton.setEnabled(false);
-
-            // Spiellogik ausfuehren: Einsatz abziehen, Gewinn berechnen
-            int gewinn = roulette.spieldurchfuehren(
-                    einsatz.getValue(), rotR(), geradeR(), zahlR());
-
-            int zahl  = roulette.ergebnis;
-            int index = roulette.getWinkelIndex(); // Index des Ergebnisfelds auf dem Rad
-
-            // ── Zielwinkel berechnen ──────────────────────────────────────
-            // Das Rad hat 37 Felder (0-36), gleichmaessig auf 2*PI verteilt.
-            // imageOffset korrigiert die Startposition des Bildes (-PI/2 = 12-Uhr-Position).
-            double anglePerField     = 2 * Math.PI / 37;
-            double imageOffset       = -Math.PI / 2;
-            double currentNormalized = ballAngle % (2 * Math.PI);
-            double targetNormalized  = index * anglePerField + imageOffset;
-            if (targetNormalized < 0) targetNormalized += 2 * Math.PI;
-
-            // Differenz stets positiv halten (Ball dreht sich immer vorwaerts)
-            double delta = targetNormalized - currentNormalized;
-            if (delta <= 0) delta += 2 * Math.PI;
-
-            // Mindestens 5 volle Umdrehungen (10*PI) vor dem Einlaufen in die Zielposition
-            targetAngle = ballAngle + (Math.PI * 10) + delta;
-            ballSpeed   = 0.35 + Math.random() * 0.05; // leichte Zufallsvariation beim Start
-            spinning    = true;
-
-            // ── Jackpot-GIF anzeigen (nur bei Hauptgewinn) ────────────────
-            if (roulette.getHauptgewinn())
-            {
-                ImageIcon winGif = new ImageIcon(
-                        getClass().getClassLoader().getResource("pics/jackpot.gif"));
-                JLabel winAnimation = new JLabel(winGif);
-                winAnimation.setBounds(900, 500, 700, 500);
-                add(winAnimation);
-                winAnimation.setVisible(true);
-                // GIF nach 3 Sekunden automatisch ausblenden
-                new Timer(3000, ev -> winAnimation.setVisible(false)).start();
-            }
-
-            // ── Ergebnis verzoegert anzeigen ──────────────────────────────
-            // 4500 ms entsprechen ungefaehr der Animations-Dauer bis zum Stillstand
-            int finalGewinn = gewinn;
-            int finalZahl   = zahl;
-            Timer timer = new Timer(4500, event ->
-            {
-                // Buff-Bonus: LuckySpin gibt 50% des Gewinns als Bonus obendrauf
-                int bonus = 0;
-                if (buffManager.isLuckySpinAktiv() && finalGewinn > 0)
                 {
-                    bonus = finalGewinn / 2;
-                    spieler.changeKontostand(bonus);
-                }
-                buffManager.rouletteRundeGespielt();
+                    // Button waehrend der Animation sperren, um Doppelklicks zu verhindern
+                    spinButton.setEnabled(false);
 
-                ergebnisLabel.setText("Zahl: " + finalZahl + " | Gewinn: " + finalGewinn
-                        + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : "") + "$");
-                refresh();
-                spinButton.setEnabled(true);
+                    // Spiellogik ausfuehren: Einsatz abziehen, Gewinn berechnen
+                    int gewinn = roulette.spieldurchfuehren(
+                            einsatz.getValue(), farbeSetzen, geradeSetzen, zahlR());
+
+                    int zahl  = roulette.ergebnis;
+                    int index = roulette.getWinkelIndex(); // Index des Ergebnisfelds auf dem Rad
+
+                    // ── Zielwinkel berechnen ──────────────────────────────────────
+                    // Das Rad hat 37 Felder (0-36), gleichmaessig auf 2*PI verteilt.
+                    // imageOffset korrigiert die Startposition des Bildes (-PI/2 = 12-Uhr-Position).
+                    double anglePerField     = 2 * Math.PI / 37;
+                    double imageOffset       = -Math.PI / 2;
+                    double currentNormalized = ballAngle % (2 * Math.PI);
+                    double targetNormalized  = index * anglePerField + imageOffset;
+                    if (targetNormalized < 0) targetNormalized += 2 * Math.PI;
+
+                    // Differenz stets positiv halten (Ball dreht sich immer vorwaerts)
+                    double delta = targetNormalized - currentNormalized;
+                    if (delta <= 0) delta += 2 * Math.PI;
+
+                    // Mindestens 5 volle Umdrehungen (10*PI) vor dem Einlaufen in die Zielposition
+                    targetAngle = ballAngle + (Math.PI * 10) + delta;
+                    ballSpeed   = 0.35 + Math.random() * 0.05; // leichte Zufallsvariation beim Start
+                    spinning    = true;
+
+                    // ── Jackpot-GIF anzeigen (nur bei Hauptgewinn) ────────────────
+                    if (roulette.getHauptgewinn())
+                    {
+                        ImageIcon winGif = new ImageIcon(
+                                getClass().getClassLoader().getResource("pics/jackpot.gif"));
+                        JLabel winAnimation = new JLabel(winGif);
+                        winAnimation.setBounds(900, 500, 700, 500);
+                        add(winAnimation);
+                        winAnimation.setVisible(true);
+                        // GIF nach 3 Sekunden automatisch ausblenden
+                        new Timer(3000, ev -> winAnimation.setVisible(false)).start();
+                    }
+
+                    // ── Ergebnis verzoegert anzeigen ──────────────────────────────
+                    // 4500 ms entsprechen ungefaehr der Animations-Dauer bis zum Stillstand
+                    int finalGewinn = gewinn;
+                    int finalZahl   = zahl;
+                    Timer timer = new Timer(4500, event ->
+                                {
+                                    // Buff-Bonus: LuckySpin gibt 50% des Gewinns als Bonus obendrauf
+                                    int bonus = 0;
+                                    if (buffManager.isLuckySpinAktiv() && finalGewinn > 0)
+                                    {
+                                        bonus = finalGewinn / 2;
+                                        spieler.changeKontostand(bonus);
+                                    }
+                                    buffManager.rouletteRundeGespielt();
+
+                                    ergebnisLabel.setText("Zahl: " + finalZahl + " | Gewinn: " + finalGewinn
+                                        + (bonus > 0 ? " (+" + bonus + "$ Buff!)" : "") + "$");
+                                    refresh();
+                                    spinButton.setEnabled(true);
+                            });
+                    timer.setRepeats(false);
+                    timer.start();
             });
-            timer.setRepeats(false);
-            timer.start();
-        });
 
         // ── Ergebnis-Label ────────────────────────────────────────────────
         ergebnisLabel = new JLabel("Ergebnis: -");
@@ -250,13 +336,19 @@ public class RoulettePanel extends CasinoGUI implements Runnable
         // Eingabefelder und zugehoerige Labels rechts ausgerichtet
         int formX = (int)(w * 0.65);
         int label = (int)(w * 0.61);
-        geradeFeld.setBounds(formX, (int)(h * 0.70), 150, 35);
-        rotFeld   .setBounds(formX, (int)(h * 0.80), 150, 35);
+        //geradeFeld.setBounds(formX, (int)(h * 0.70), 150, 35);
+        //rotFeld   .setBounds(formX, (int)(h * 0.80), 150, 35);
         zahlFeld  .setBounds(formX, (int)(h * 0.90), 150, 35);
 
-        geradeLabel.setBounds((int)(w * 0.55), (int)(h * 0.70), 150, 35);
-        rotLabel   .setBounds(label,           (int)(h * 0.80), 150, 35);
+        //geradeLabel.setBounds((int)(w * 0.55), (int)(h * 0.70), 150, 35);
+        //rotLabel   .setBounds(label,           (int)(h * 0.80), 150, 35);
         zahlLabel  .setBounds(label,           (int)(h * 0.90), 150, 35);
+
+        rot.setBounds((int)(w * 0.5), (int)(h * 0.70), 150, 35);
+        schwarz.setBounds((int)(w * 0.65), (int)(h * 0.70), 150, 35);
+        gerade.setBounds((int)(w * 0.5), (int)(h * 0.80), 150, 35);
+        ungerade.setBounds((int)(w * 0.65), (int)(h * 0.80), 150, 35);
+        reset.setBounds((int)(w * 0.35), (int)(h * 0.70), 150, 35);
 
         spinButton   .setBounds((int)(w * 0.82), (int)(h * 0.76), 170, 70);
         ergebnisLabel.setBounds((int)(w * 0.78), (int)(h * 0.86), 500, 40);
