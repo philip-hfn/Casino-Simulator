@@ -6,8 +6,8 @@ import java.util.Random;
  */
 public class Roulette
 {
-    public int ergebnis;  // Die geworfene Zahl der aktuellen Runde (0-36)
-    public int gewinn; // Der berechnete Gewinnbetrag der aktuellen Runde
+    public int ergebnis;// Die geworfene Zahl der aktuellen Runde (0-36)
+    public int gewinn;// Der berechnete Gewinnbetrag der aktuellen Runde
     
     // 2D-Array zur Speicherung der Eigenschaften jeder Zahl:
     //Index 0: true=gerade/false=ungerade, Index 1: true=rot/false=schwarz
@@ -41,7 +41,7 @@ public class Roulette
      */
     public Roulette(Spieler nSpieler)
     {
-        felder  = new boolean[37][4];// Initialisiert das Eigenschafts-Array für 37 Zahlen (0 bis 36)
+        felder = new boolean[37][4];// Initialisiert das Eigenschafts-Array für 37 Zahlen (0 bis 36)
         spieler = nSpieler;
         arrayBefuellen();
     }
@@ -80,52 +80,52 @@ public class Roulette
     {
         if (farbe.equalsIgnoreCase("rot"))
         {
-            kriteriumFarbe        = true;
+            kriteriumFarbe = true;
             kriteriumFarbeGesetzt = true;
-            farbeGesetz           = false;
+            farbeGesetz = false;
         }
         else if (farbe.equalsIgnoreCase("schwarz"))
         {
-            kriteriumFarbe        = false;
+            kriteriumFarbe = false;
             kriteriumFarbeGesetzt = true;
-            farbeGesetz           = false;
+            farbeGesetz = false;
         }
         else if (farbe.equals("-"))
         {
             kriteriumFarbeGesetzt = false;
-            farbeGesetz           = false;
+            farbeGesetz = false;
         }
 
         // NEU: akzeptiert "gerade"/"ungerade" statt "ja"/"nein"
         if (gerade.equalsIgnoreCase("gerade"))
         {
-            kriteriumGerade        = true;
+            kriteriumGerade = true;
             kriteriumGeradeGesetzt = true;
-            farbeGesetz            = false;
+            farbeGesetz = false;
         }
         else if (gerade.equalsIgnoreCase("ungerade"))
         {
-            kriteriumGerade        = false;
+            kriteriumGerade = false;
             kriteriumGeradeGesetzt = true;
-            farbeGesetz            = false;
+            farbeGesetz = false;
         }
         else if (gerade.equals("-"))
         {
             kriteriumGeradeGesetzt = false;
-            farbeGesetz            = false;
+            farbeGesetz = false;
         }
 
         if (gerade.equals("-") && farbe.equals("-") && zahl < 37 && zahl > 0)
         {
             kriteriumZahl = zahl;
-            farbeGesetz   = true;
+            farbeGesetz = true;
         }
     }
 
     /**
      * Prueft, ob der Spieler genug Guthaben besitzt, und zieht den Einsatz vorab vom Konto ab
      * @param nEinsatz Der gewuenschte Geldeinsatz
-     * @return Den akzeptierten Einsatz     ^
+     * @return Den akzeptierten Einsatz    
      */
     public int einsatzFestlegen(int nEinsatz)
     {
@@ -149,7 +149,7 @@ public class Roulette
      */
     public int rouletteDrehen()
     {
-        Random random = new Random();  // Erstellt einen neuen Zufallsgenerator
+        Random random = new Random(); // Erstellt einen neuen Zufallsgenerator
         ergebnis = random.nextInt(37); // Generiert eine Zahl 
         return ergebnis; //Liefert die Gewinnzahl zurück
     }
@@ -170,9 +170,9 @@ public class Roulette
      */
     public int gewinnBerechnen()
     {
-        int     ergebnisZahl   = rouletteDrehen();
+        int ergebnisZahl = rouletteDrehen();
         boolean ergebnisGerade = felder[ergebnisZahl][0];// Ermittelt die Eigenschaft (Gerade/Ungerade) der geworfenen Zahl
-        boolean ergebnisFarbe  = felder[ergebnisZahl][1];// Ermittelt die Eigenschaft (Farbe) der geworfenen Zahl
+        boolean ergebnisFarbe = felder[ergebnisZahl][1];// Ermittelt die Eigenschaft (Farbe) der geworfenen Zahl
 
         if (kriteriumZahl == 0) // Fall 1: Keine Einzelzahl-Wette aktiv 
         {
@@ -183,17 +183,23 @@ public class Roulette
             }
             else if (kriteriumGeradeGesetzt) // Einfache Wette: Nur auf Gerade/Ungerade gesetzt und gewonnen
             {
-                if (kriteriumGerade == ergebnisGerade) gewinn = einsatz * 2;
+                if (kriteriumGerade == ergebnisGerade)
+                {
+                   gewinn = einsatz * 2; 
+                }
             }
             else if (kriteriumFarbeGesetzt)// Einfache Wette: Nur auf Farbe gesetzt und gewonnen
             {
-                if (kriteriumFarbe == ergebnisFarbe) gewinn = einsatz * 2;
+                if (kriteriumFarbe == ergebnisFarbe)
+                { 
+                    gewinn = einsatz * 2;
+                }
             }
         }
 
         if (kriteriumZahl == ergebnisZahl && kriteriumZahl != 0) // Fall 2: Der Spieler hat die exakte Zahl erraten
         {
-            gewinn      = einsatz * 36;
+            gewinn = einsatz * 36;
             hauptgewinn = true;// Loest den Hauptgewinn-Status aus
         }
 

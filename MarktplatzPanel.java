@@ -68,7 +68,7 @@ public class MarktplatzPanel extends CasinoGUI
         titel.setForeground(Color.WHITE);
         add(titel);
 
-        // ── Erstellung der 4 Buff-Karten ──────────────────────────────────
+        // Erstellung der 4 Buff-Karten
         // Jede Karte erhaelt einen Callback an die Marktplatz-Logik
         lucky7StatusLabel = addBuffKarte(
             0, "🎰  Lucky 7", "7er Gewinn wird verdreifacht", "x3 Gewinn bei 7",
@@ -227,7 +227,7 @@ public class MarktplatzPanel extends CasinoGUI
         int karteW = (int)(w * 0.45);
         int karteH = 120;
         int startY = 160;
-        int gapY   = 20;
+        int gapY = 20;
         int startX = (w - karteW) / 2;
 
         int kartenIndex = 0;
@@ -243,19 +243,29 @@ public class MarktplatzPanel extends CasinoGUI
                     {
                         JLabel lbl = (JLabel) k;
                         if (lbl.getFont().getName().equals("Georgia") && lbl.getText().contains("$"))
+                        {
                             lbl.setBounds(karteW - 160, 20, 120, 30);
+                        }
                         if (lbl.getText().startsWith("✅") || lbl.getText().equals("Nicht aktiv"))
+                        {
                             lbl.setBounds(230, 92, 200, 20);
+                        }
                     }
                     if (k instanceof JButton)
+                    {
                         k.setBounds(karteW - 160, 55, 120, 40);
+                    }
                     if (k instanceof JLabel && ((JLabel)k).isOpaque())
+                    {
                         k.setBounds(0, 0, 8, karteH);
+                    }
                 }
                 kartenIndex++;
             }
             if (c instanceof JLabel && ((JLabel)c).getText().contains("Marktplatz"))
+            {
                 c.setBounds(0, 90, w, 50);
+            }
         }
     }
 

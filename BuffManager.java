@@ -5,20 +5,19 @@
 public class BuffManager
 {
     //Zaehler fuer die verbleibenden Runden der einzelnen Buffs
-    private int lucky7Runden = 0; //7er Gewinn x3
+    private int lucky7Runden = 0;//7er Gewinn x3
     private int jackpotBoostRunden = 0; //Jackpot Gewinn x2
-    private int luckySpinRunden = 0; //Roulette +50%
-    private int doubleUpRunden = 0; //Naechster Slot x2
+    private int luckySpinRunden = 0;//Roulette +50%
+    private int doubleUpRunden = 0;//Naechster Slot x2
 
     //Buffs aktivieren (wird vom Marktplatz aufgerufen)
-
     /**
      * Aktiviert den Lucky-7-Buff fuer die angegebene Anzahl an Runden.
      * @param runden Anzahl der Runden, die hinzugefuegt werden sollen.
      */
     public void aktiviereLucky7(int runden)      
     {
-        lucky7Runden += runden; // Addiert die Runden zum vorhandenen Puffer
+        lucky7Runden += runden; // Addiert die Runden zu den vorhandenen
     }
 
     /**
@@ -27,7 +26,7 @@ public class BuffManager
      */
     public void aktiviereJackpotBoost(int runden)
     {
-        jackpotBoostRunden += runden; // Addiert die Runden zum vorhandenen Puffer
+        jackpotBoostRunden += runden; // Addiert die Runden zu den vorhandenen 
     }
 
     /**
@@ -36,7 +35,7 @@ public class BuffManager
      */
     public void aktiviereLuckySpin(int runden)   
     {
-        luckySpinRunden += runden; // Addiert die Runden zum vorhandenen Puffer
+        luckySpinRunden += runden; // Addiert die Runden zu den vorhandenen 
     }
 
     /**
@@ -45,11 +44,10 @@ public class BuffManager
      */
     public void aktiviereDoubleUp(int runden)    
     {
-        doubleUpRunden += runden; // Addiert die Runden zum vorhandenen Puffer
+        doubleUpRunden += runden; // Addiert die Runden zu den vorhandenen 
     }
 
     // Abfragen ob ein Buff aktiv ist 
-
     /**
      * Prueft, ob der Lucky-7-Buff aktuell aktiv ist.
      * @return true, wenn noch Runden verbleiben.
@@ -121,7 +119,6 @@ public class BuffManager
     }
 
     //Fuer die Anzeige im Marktplatz
-
     /** 
      * @return Verbleibende Runden des Lucky-7-Buffs.
      */

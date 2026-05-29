@@ -7,8 +7,8 @@ import java.io.File;
  */
 public class SoundManager
 {
-    private Clip musikClip;   // Clip für die dauerhafte Hintergrundmusik
-    private Clip effektClip;  // Clip für kurzzeitige Soundeffekte
+    private Clip musikClip; // Clip für die dauerhafte Hintergrundmusik
+    private Clip effektClip; // Clip für kurzzeitige Soundeffekte
 
     /**
      * Startet eine Hintergrundmusikdatei und spielt diese in einer Endlosschleife ab
@@ -43,8 +43,9 @@ public class SoundManager
         {
             // Vorherigen Effekt-Clip stoppen, falls dieser noch läuft
             if (effektClip != null && effektClip.isRunning())
+            {
                 effektClip.stop();
-
+            }
             File file = new File(pfad);
             AudioInputStream audio = AudioSystem.getAudioInputStream(file);
             effektClip = AudioSystem.getClip(); // Neuer Clip für den Effekt
@@ -122,6 +123,8 @@ public class SoundManager
     public void stoppeMusik()
     {
         if (musikClip != null && musikClip.isRunning())
+        {
             musikClip.stop();
+        }
     }
 }

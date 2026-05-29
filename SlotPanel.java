@@ -13,8 +13,7 @@ import java.util.List;
  */
 public class SlotPanel extends CasinoGUI
 {
-    // ── Innere Klasse: einzelne Walzenanzeige ─────────────────────────────
-
+    //Innere Klasse: einzelne Walzenanzeige
     /**
      * Anzeigekomponente fuer eine einzelne Slot-Walze.
      * Zeichnet ein Bild skaliert auf die volle Panel-Flaeche.
@@ -24,16 +23,17 @@ public class SlotPanel extends CasinoGUI
     {
         //Das aktuell angezeigte Slot-Symbol
         private BufferedImage currentImage;
-
         /** 
          * Erstellt eine leere, transparente Walzenanzeige. 
          */
-        public SlotReel() { setOpaque(false); }
+        public SlotReel() 
+        { 
+            setOpaque(false); 
+        }
 
         /**
          * Setzt ein neues Slot-Symbol und loest sofort eine Neuzeichnung aus.
-         * Wird waehrend der Animation in schneller Folge mit Zufallsbildern
-         * und abschliessend mit dem Ergebnisbild aufgerufen.
+         * Wird waehrend der Animation in schneller Folge mit Zufallsbildern und abschliessend mit dem Ergebnisbild aufgerufen.
          * @param img das anzuzeigende Symbolbild
          */
         public void setImage(BufferedImage img)
@@ -43,7 +43,7 @@ public class SlotPanel extends CasinoGUI
         }
 
         /**
-         * Zeichnet das aktuelle Symbol skaliert auf die gesamte Panel-Flaeche.
+         * Zeichnet das aktuelle Symbol skaliert auf die gesamte Panel-Flaeche
          * @param g das Graphics-Objekt des aktuellen Paint-Zyklus
          */
         @Override
@@ -55,56 +55,53 @@ public class SlotPanel extends CasinoGUI
         }
     }
 
-    // ── Walzen-Anzeigen ───────────────────────────────────────────────────
-    private SlotReel slotReel1; // linke Walze
-    private SlotReel slotReel2; // mittlere Walze
-    private SlotReel slotReel3; // rechte Walze
+    //Walzen-Anzeigen 
+    private SlotReel slotReel1; //linke Walze
+    private SlotReel slotReel2; //mittlere Walze
+    private SlotReel slotReel3; //rechte Walze
 
-    // ── Steuer- und Anzeige-Elemente ──────────────────────────────────────
-    private JLabel     gewinnLabel;      // zeigt Spielergebnis oder Hinweistext
-    private JButton    drehenButton;     // transparenter Button ueber dem Hebel im Bild
-    private JTextField slotEinsatzFeld;  // aktuell durch Slider ersetzt, nicht sichtbar
-    private JSlider    slotEinsatz;      // Einsatzbetrag in Euro
-    private JLabel     slotEinsatzLabel; // spiegelt den aktuellen Slider-Wert
-    private JLabel     kontoLabel;       // aktueller Kontostand
-    private JButton    backButton;       // zurueck zum Hub
+    //Steuer- und Anzeige-Elemente 
+    private JLabel gewinnLabel; // zeigt Spielergebnis oder Hinweistext
+    private JButton drehenButton;// transparenter Button ueber dem Hebel im Bild
+    private JTextField slotEinsatzFeld; // aktuell durch Slider ersetzt, nicht sichtbar
+    private JSlider slotEinsatz; // Einsatzbetrag in $
+    private JLabel slotEinsatzLabel; // spiegelt den aktuellen Slider-Wert
+    private JLabel kontoLabel;       // aktueller Kontostand
+    private JButton backButton;       // zurueck zum Hub
 
-    // ── Bilder & Spiellogik ───────────────────────────────────────────────
-    private BufferedImage   slotImage;   // Hintergrundbild des Automaten
-    private BufferedImage[] slotBilder;  // Slot-Symbole, Index 1-9
-    private Slot            slot;        // kapselt die Spiellogik und Gewinnberechnung
-    private BuffManager     buffManager; // prueft aktive Gewinn-Buffs
+    //Bilder & Spiellogik
+    private BufferedImage slotImage;// Hintergrundbild des Automaten
+    private BufferedImage[] slotBilder; // Slot-Symbole, Index 1-9
+    private Slot slot; // kapselt die Spiellogik und Gewinnberechnung
+    private BuffManager buffManager; // prueft aktive Gewinn-Buffs
 
-    // ── Sound ─────────────────────────────────────────────────────────────
+    // Sound
     private SoundManager sound; // spielt Dreh- und Jackpot-Sounds ab
 
-    // ── Konfetti-Animation ────────────────────────────────────────────────
-    /**
-     * Jedes Konfetti-Teilchen wird als int[5] gespeichert:
-     * [0] x-Position, [1] y-Position, [2] Fallgeschwindigkeit,
-     * [3] Farb-Index (0=rot, 1=gold), [4] Groesse in Pixeln
-     */
-    private List<int[]> konfettiList  = new ArrayList<>();
-    private Timer       konfettiTimer;          // bewegt Teilchen alle 30 ms nach unten
-    private boolean     konfettiAktiv = false;  // steuert das Zeichnen in paintComponent
+    // Konfetti-Animation
 
-    // ── Jackpot-Text-Animation ────────────────────────────────────────────
-    private int     textGroesse = 0;    // aktuelle Schriftgroesse (0 = nicht sichtbar)
+    //Jedes Konfetti-Teilchen wird als int[5] gespeichert:
+    //[0] x-Position, [1] y-Position, [2] Fallgeschwindigkeit,
+    // [3] Farb-Index (0=rot, 1=gold), [4] Groesse in Pixeln
+    private List<int[]> konfettiList  = new ArrayList<>();
+    private Timer konfettiTimer; // bewegt Teilchen alle 30 ms nach unten
+    private boolean konfettiAktiv = false; // steuert das Zeichnen in paintComponent
+
+    //Jackpot-Text-Animation
+    private int textGroesse = 0; // aktuelle Schriftgroesse (0 = nicht sichtbar)
     private boolean textWaechst = true; // true = waechst, false = schrumpft
-    private Timer   textTimer;          // aktualisiert textGroesse alle 20 ms
+    private Timer textTimer; // aktualisiert textGroesse alle 20 ms
 
     private HubPanel.ScreenSwitcher screenSwitcher;
 
     
     /**
      * Erstellt das Slot-Panel und verdrahtet alle Abhaengigkeiten.
-     *
      * @param spieler Spieler-Profil fuer Guthabenaenderungen
      * @param buffManager Buff-System zur Pruefung aktiver Gewinnmultiplikatoren
      * @param screenSwitcher Navigator fuer den Bildschirmwechsel
      */
-    public SlotPanel(Spieler spieler, BuffManager buffManager,
-                     HubPanel.ScreenSwitcher screenSwitcher)
+    public SlotPanel(Spieler spieler, BuffManager buffManager, HubPanel.ScreenSwitcher screenSwitcher)
     {
         this.spieler = spieler;
         this.buffManager = buffManager;
@@ -129,14 +126,14 @@ public class SlotPanel extends CasinoGUI
         for (int i = 1; i <= 9; i++)
             slotBilder[i] = loadImage("pics/slot" + i + ".png");
 
-        // ── Back-Button ───────────────────────────────────────────────────
+        // Back-Button
         backButton = new JButton("Back");
         styleButton(backButton);
         addHoverEffect(backButton);
         backButton.addActionListener(e -> screenSwitcher.switchTo(0));
         add(backButton);
 
-        // ── Walzen (alle starten mit Symbol 1) ────────────────────────────
+        // Walzen (alle starten mit Symbol 1
         slotReel1 = new SlotReel();
         slotReel1.setImage(slotBilder[1]);
         add(slotReel1);
@@ -149,31 +146,31 @@ public class SlotPanel extends CasinoGUI
         slotReel3.setImage(slotBilder[1]);
         add(slotReel3);
 
-        // ── Gewinn-Label (goldfarben) ─────────────────────────────────────
+        // Gewinn-Label (goldfarben)
         gewinnLabel = new JLabel("Druecke auf den Hebel!", SwingConstants.CENTER);
         gewinnLabel.setFont(new Font("Serif", Font.BOLD, 28));
         gewinnLabel.setForeground(new Color(184, 134, 11));
         add(gewinnLabel);
 
-        // ── Kontostand-Label (goldfarben) ─────────────────────────────────
-        kontoLabel = new JLabel("Kontostand: " + spieler.getKontostand() + "Euro");
+        // Kontostand-Label (goldfarben)
+        kontoLabel = new JLabel("Kontostand: " + spieler.getKontostand() + "$");
         kontoLabel.setFont(new Font("Serif", Font.BOLD, 25));
         kontoLabel.setForeground(new Color(184, 134, 11));
         add(kontoLabel);
 
-        // ── Einsatz-Label ─────────────────────────────────────────────────
+        // Einsatz-Label
         slotEinsatzLabel = new JLabel("Einsatz:");
         slotEinsatzLabel.setFont(new Font("Serif", Font.BOLD, 18));
         slotEinsatzLabel.setForeground(Color.WHITE);
         add(slotEinsatzLabel);
 
-        // ── Einsatz-Textfeld (aktuell durch Slider ersetzt, nicht sichtbar) ─
+        // Einsatz-Textfeld (aktuell durch Slider ersetzt, nicht sichtbar)
         slotEinsatzFeld = new JTextField("10");
         slotEinsatzFeld.setFont(new Font("Serif", Font.PLAIN, 18));
         slotEinsatzFeld.setBackground(new Color(184, 134, 11));
         add(slotEinsatzFeld);
 
-        // ── Einsatz-Slider ────────────────────────────────────────────────
+        // Einsatz-Slider 
         // Wertebereich: 0 bis aktueller Kontostand, Startwert in der Mitte
         slotEinsatz = new JSlider(0, spieler.getKontostand(), spieler.getKontostand() / 2);
         slotEinsatz.setMajorTickSpacing(500);
@@ -185,25 +182,25 @@ public class SlotPanel extends CasinoGUI
         slotEinsatz.setFont(new Font("Arial", Font.BOLD, 14));
         add(slotEinsatz);
 
-        // ── Drehen-Button (unsichtbar, liegt exakt ueber dem Hebel im Bild) ─
+        // Drehen-Button (unsichtbar, liegt exakt ueber dem Hebel im Bild)
         drehenButton = new JButton();
         styleButton(drehenButton);
         drehenButton.setContentAreaFilled(false); // kein Hintergrundfill
-        drehenButton.setBorderPainted(false);      // kein Rahmen
-        drehenButton.setFocusPainted(false);       // kein Fokus-Rechteck
-        drehenButton.setRolloverEnabled(false);    // kein Hover-Effekt
-        drehenButton.setOpaque(false);             // vollstaendig transparent
+        drehenButton.setBorderPainted(false); // kein Rahmen
+        drehenButton.setFocusPainted(false); // kein Fokus-Rechteck
+        drehenButton.setRolloverEnabled(false); // kein Hover-Effekt
+        drehenButton.setOpaque(false); // vollstaendig transparent
         add(drehenButton);
 
         // Einsatz-Label live aktualisieren, wenn Slider bewegt wird
         slotEinsatz.addChangeListener(e ->
-                slotEinsatzLabel.setText("Einsatz: " + slotEinsatz.getValue() + " Euro"));
+                slotEinsatzLabel.setText("Einsatz: " + slotEinsatz.getValue() + " $"));
 
-        // ── Drehen-Button ActionListener ──────────────────────────────────
+        // Drehen-Button ActionListener
         drehenButton.addActionListener(e ->
         {
             sound.spinEffekt();
-
+            
             // Einsatz aus Slider lesen (try-catch fuer zukuenftige Textfeld-Nutzung)
             int slotEinsatzTemp;
             try
@@ -242,7 +239,7 @@ public class SlotPanel extends CasinoGUI
             // (Walze 2 verzoegert um 400 ms, Walze 3 um 800 ms)
             drehenButton.setEnabled(false);
             gewinnLabel.setText("...");
-            starteAnimation(slotReel1, ziel1,   0);
+            starteAnimation(slotReel1, ziel1, 0);
             starteAnimation(slotReel2, ziel2, 400);
             starteAnimation(slotReel3, ziel3, 800);
 
@@ -251,7 +248,7 @@ public class SlotPanel extends CasinoGUI
             int finalMulti = gewinnMultiplikator;
             Timer ergebnisTimer = new Timer(800 + 30 * 80 + 500, ev ->
             {
-                // ── Buff-Boni berechnen und gutschreiben ──────────────────
+                // Buff-Boni berechnen und gutschreiben
                 int bonus = 0;
                 if (slot.getGewinn() > 0)
                 {
@@ -271,19 +268,18 @@ public class SlotPanel extends CasinoGUI
                 if (bonus > 0) spieler.changeKontostand(bonus);
                 buffManager.slotRundeGespielt();
 
-                // ── UI nach Runde aktualisieren ───────────────────────────
-                kontoLabel.setText("Kontostand: " + spieler.getKontostand() + "Euro");
+                // UI nach Runde aktualisieren 
+                kontoLabel.setText("Kontostand: " + spieler.getKontostand() + "$");
                 // Slider-Maximum und Tick-Abstaende an neuen Kontostand anpassen
                 slotEinsatz.setMaximum(spieler.getKontostand());
                 slotEinsatz.setMajorTickSpacing(Math.max(1, spieler.getKontostand() / 5));
-                slotEinsatz.setLabelTable(
-                        slotEinsatz.createStandardLabels(Math.max(1, spieler.getKontostand() / 5)));
+                slotEinsatz.setLabelTable(slotEinsatz.createStandardLabels(Math.max(1, spieler.getKontostand() / 5)));
 
-                // ── Ergebnis-Feedback (Text + Sound + Effekte) ────────────
+                // Ergebnis-Feedback (Text + Sound + Effekte)
                 if (slot.super7IchKaufDasKasino())
                 {
                     // Drei 7er: Jackpot mit allen Effekten
-                    gewinnLabel.setText("JACKPOT 777 !!!" + (bonus > 0 ? " (+" + bonus + "Euro Buff!)" : ""));
+                    gewinnLabel.setText("JACKPOT 777 !!!"+(bonus>0?"(+"+ bonus +"$ Buff!)":""));
                     konfettiAnimation();
                     jackpotTextAnimation();
                     sound.jackpotEffekt();
@@ -291,14 +287,14 @@ public class SlotPanel extends CasinoGUI
                 else if (slot.hauptGewinn())
                 {
                     // Drei gleiche Symbole
-                    gewinnLabel.setText("Grosser Gewinn!" + (bonus > 0 ? " (+" + bonus + "Euro Buff!)" : ""));
+                    gewinnLabel.setText("Grosser Gewinn!" +(bonus>0?"(+"+ bonus +"$ Buff!)":""));
                     konfettiAnimation();
                     sound.jackpotEffekt();
                 }
                 else if (slot.kleinerGewinn())
                 {
                     // Zwei gleiche Symbole
-                    gewinnLabel.setText("Kleiner Gewinn!" + (bonus > 0 ? " (+" + bonus + "Euro Buff!)" : ""));
+                    gewinnLabel.setText("Kleiner Gewinn!" +(bonus>0?"(+"+ bonus +"$ Buff!)":""));
                     konfettiAnimation();
                     sound.jackpotEffekt();
                 }
@@ -317,11 +313,9 @@ public class SlotPanel extends CasinoGUI
     
     /**
      * Startet die Konfetti-Animation bei einem Gewinn.
-     *
-     * Erzeugt 100 Teilchen mit zufaelliger x-Position, Fallgeschwindigkeit,
-     * Farbe und Groesse. Ein Stop-Timer beendet die Animation nach 4 Sekunden.
-     * Der Bewegungs-Timer aktualisiert alle 30 ms die y-Position jedes Teilchens;
-     * Teilchen die unten herausfallen werden oben neu eingesetzt.
+     * Erzeugt 100 Teilchen mit zufaelliger x-Position, Fallgeschwindigkeit, Farbe und Groesse
+     * Ein Stop-Timer beendet die Animation nach 4 Sekunden
+     * Der Bewegungs-Timer aktualisiert alle 30 ms die y-Position jedes Teilchens, Teilchen die unten herausfallen werden oben neu eingesetzt.
      */
     private void konfettiAnimation()
     {
@@ -330,11 +324,11 @@ public class SlotPanel extends CasinoGUI
         {
             // int[]{x, y, Geschwindigkeit, Farbindex, Groesse}
             konfettiList.add(new int[]{
-                    (int)(Math.random() * getWidth()),  // zufaellige x-Startposition
-                    (int)(Math.random() * -200),        // startet oberhalb des sichtbaren Bereichs
-                    (int)(Math.random() * 5 + 3),       // Fallgeschwindigkeit: 3-7 px pro Tick
-                    (int)(Math.random() * 2),           // Farbindex: 0=rot, 1=gold
-                    (int)(Math.random() * 15 + 5)       // Groesse: 5-19 px
+                    (int)(Math.random() * getWidth()), // zufaellige x-Startposition
+                    (int)(Math.random() * -200), // startet oberhalb des sichtbaren Bereichs
+                    (int)(Math.random() * 5 + 3), // Fallgeschwindigkeit: 3-7 px pro Tick
+                    (int)(Math.random() * 2), // Farbindex: 0=rot, 1=gold
+                    (int)(Math.random() * 15 + 5) // Groesse: 5-19 px
             });
         }
         konfettiAktiv = true;
@@ -380,7 +374,10 @@ public class SlotPanel extends CasinoGUI
             if (textWaechst)
             {
                 textGroesse += 3;
-                if (textGroesse >= 120) textWaechst = false; // Wendepunkt: schrumpfen
+                if (textGroesse >= 120)
+                {    
+                 textWaechst = false; // Wendepunkt: schrumpfen
+                }
             }
             else
             {
@@ -403,14 +400,13 @@ public class SlotPanel extends CasinoGUI
      * Geschwindigkeit, danach Abbremsen (Delay +15 ms pro Tick),
      * ab Tick 30 wird das Zielbild gesetzt und der Timer gestoppt.
      * Die Verzoegerung staffelt die drei Walzen zeitlich.
-     *
-     * @param reel         die Walzen-Komponente, die animiert werden soll
-     * @param zielZahl     Index (1-9) des Ergebnis-Symbols
+     * @param reel die Walzen-Komponente, die animiert werden soll
+     * @param zielZahl Index (1-9) des Ergebnis-Symbols
      * @param verzoegerung Startverzoegerung in ms (0 / 400 / 800 fuer Walze 1-3)
      */
     private void starteAnimation(SlotReel reel, int zielZahl, int verzoegerung)
     {
-        int[] counter         = {0};  // Tick-Zaehler (als Array, da in Lambda verwendet)
+        int[] counter = {0};  // Tick-Zaehler (als Array, da in Lambda verwendet)
         int[] geschwindigkeit = {50}; // aktuelles Timer-Intervall in ms
 
         Timer timer = new Timer(geschwindigkeit[0], null);
@@ -445,7 +441,6 @@ public class SlotPanel extends CasinoGUI
     /**
      * Positioniert alle Komponenten relativ zur aktuellen Fenstergroesse.
      * Die drei Walzen werden zentriert mit gleichmaessigem Abstand platziert.
-     *
      * @param w aktuelle Panel-Breite in Pixeln
      * @param h aktuelle Panel-Hoehe in Pixeln
      */
@@ -455,23 +450,23 @@ public class SlotPanel extends CasinoGUI
         backButton.setBounds(30, 25, 120, 45);
 
         // Walzen: quadratisch (reelW x reelW), zentriert mit gapX Abstand
-        int reelY  = (int)(h * 0.53);
-        int reelW  = (int)(w * 0.08);
-        int reelH  = reelW;
-        int gapX   = (int)(w * 0.045);
+        int reelY = (int)(h * 0.53);
+        int reelW = (int)(w * 0.08);
+        int reelH = reelW;
+        int gapX = (int)(w * 0.045);
         int totalW = 3 * reelW + 2 * gapX;
         int startX = (w - totalW) / 2; // linker Rand fuer zentrierte Gruppe
 
-        slotReel1.setBounds(startX,                      reelY, reelW, reelH);
-        slotReel2.setBounds(startX + reelW + gapX,       reelY, reelW, reelH);
+        slotReel1.setBounds(startX,reelY, reelW, reelH);
+        slotReel2.setBounds(startX + reelW + gapX, reelY, reelW, reelH);
         slotReel3.setBounds(startX + 2 * (reelW + gapX), reelY, reelW, reelH);
 
-        kontoLabel .setBounds(w / 2 - 200, (int)(h * 0.09), 400, 40);
-        gewinnLabel.setBounds(w / 2 - 200, (int)(h * 0.35), 400, 40);
+        kontoLabel .setBounds(w/ 2 - 200, (int)(h * 0.09), 400, 40);
+        gewinnLabel.setBounds(w/ 2 - 200, (int)(h * 0.35), 400, 40);
 
         int inputY = reelY + reelH + 120; // Slider unterhalb der Walzen
         slotEinsatzLabel.setBounds((int)(w * 0.46), (int)(h * 0.725), 200, 35);
-        slotEinsatz     .setBounds((int)(w * 0.40), inputY,           250, 60);
+        slotEinsatz.setBounds((int)(w * 0.40), inputY, 250, 60);
 
         // Transparenter Button exakt ueber dem Hebel im Hintergrundbild
         drehenButton.setBounds((int)(w * 0.735), (int)(h * 0.22), 60, (int)(h * 0.36));
@@ -480,7 +475,6 @@ public class SlotPanel extends CasinoGUI
     
     /**
      * Zeichnet das Hintergrundbild des Spielautomaten.
-     *
      * @param g das Graphics-Objekt des aktuellen Paint-Zyklus
      */
     @Override
@@ -504,18 +498,18 @@ public class SlotPanel extends CasinoGUI
         updateLayoutPositions(getWidth(), getHeight());
         drawBackground(g);
 
-        // ── Konfetti ueber allem zeichnen ─────────────────────────────────
+        //Konfetti ueber allem zeichnen 
         if (konfettiAktiv)
         {
             Color[] farben = {Color.RED, new Color(212, 175, 55)}; // rot und gold
             for (int[] k : konfettiList)
             {
-                g.setColor(farben[k[3]]);            // Farbe aus Index
+                g.setColor(farben[k[3]]);// Farbe aus Index
                 g.fillRect(k[0], k[1], k[4], k[4]); // quadratisches Teilchen
             }
         }
 
-        // ── Jackpot-Text zentriert in Bildschirmmitte ─────────────────────
+        // Jackpot-Text zentriert in Bildschirmmitte
         if (textGroesse > 0)
         {
             g.setFont(new Font("Arial", Font.BOLD, textGroesse));
@@ -536,8 +530,7 @@ public class SlotPanel extends CasinoGUI
     public void refresh()
     {
         int max = spieler.getKontostand();
-
-        kontoLabel.setText("Kontostand: " + max + "Euro");
+        kontoLabel.setText("Kontostand: " + max + "$");
 
         // Slider-Maximum und Tick-Abstaende an neuen Kontostand anpassen
         slotEinsatz.setMaximum(max);

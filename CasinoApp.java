@@ -29,7 +29,7 @@ public class CasinoApp implements HubPanel.ScreenSwitcher
     {
         try
         {
-            // Setzt den plattformunabhaengigen Look-and-Feel fuer ein einheitliches Design
+            // Setzt den Look-and-Feel fuer ein einheitliches Design
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         }
         catch (Exception e) { e.printStackTrace(); }
