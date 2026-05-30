@@ -155,7 +155,7 @@ public class SlotPanel extends CasinoGUI
         // Kontostand-Label (goldfarben)
         kontoLabel = new JLabel("Kontostand: " + spieler.getKontostand() + "$");
         kontoLabel.setFont(new Font("Serif", Font.BOLD, 25));
-        kontoLabel.setForeground(new Color(184, 134, 11));
+        kontoLabel.setForeground(new Color(255, 255, 255));
         add(kontoLabel);
 
         // Einsatz-Label
@@ -461,8 +461,8 @@ public class SlotPanel extends CasinoGUI
         slotReel2.setBounds(startX + reelW + gapX, reelY, reelW, reelH);
         slotReel3.setBounds(startX + 2 * (reelW + gapX), reelY, reelW, reelH);
 
-        kontoLabel .setBounds(w/ 2 - 200, (int)(h * 0.09), 400, 40);
-        gewinnLabel.setBounds(w/ 2 - 200, (int)(h * 0.35), 400, 40);
+        kontoLabel .setBounds(w/ 2 - 100, (int)(h * 0.05), 400, 40);
+        gewinnLabel.setBounds(w/ 2 - 300, (int)(h * 0.35), 600, 40);
 
         int inputY = reelY + reelH + 120; // Slider unterhalb der Walzen
         slotEinsatzLabel.setBounds((int)(w * 0.46), (int)(h * 0.725), 200, 35);
