@@ -184,10 +184,10 @@ public class HubPanel extends CasinoGUI
                 "ROULETTE\n" +
                 "1. Einsatz per Regler waehlen.\n" +
                 "2. Wette eingeben:\n" +
-                "   - Farbe: 'rot' oder 'schwarz' -> Gewinn x2\n" +
-                "   - Paritaet: 'gerade' oder 'ungerade' -> Gewinn x2\n" +
+                "   - Über die Button kann deine Wette ausgewählt werden\n" +
+                "   - Über den Reset Button lassen sich die Wettoptionen zurücksetzen\n" +
                 "   - Zahl: 1-36 eingeben -> Gewinn x36\n" +
-                "   - Nicht setzen: '-' eingeben oder Zahl auf 0 lassen\n" +
+                "   - Nicht setzen: Zahl auf 0 lassen\n" +
                 "   Achtung: Zahl und Farbe/Paritaet koennen nicht kombiniert werden.\n" +
                 "3. 'SPIN' druecken.\n\n" +
                 "SLOT-MASCHINE\n" +

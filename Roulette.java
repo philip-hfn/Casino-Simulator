@@ -115,10 +115,12 @@ public class Roulette
             farbeGesetz = false;
         }
 
-        if (gerade.equals("-") && farbe.equals("-") && zahl < 37 && zahl > 0)
+        if ((gerade.equals("-") || farbe.equals("-")) && zahl < 37 && zahl > 0)
         {
             kriteriumZahl = zahl;
             farbeGesetz = true;
+            kriteriumFarbeGesetzt = false;
+            kriteriumGeradeGesetzt = false;
         }
     }
 
@@ -173,7 +175,7 @@ public class Roulette
         int ergebnisZahl = rouletteDrehen();
         boolean ergebnisGerade = felder[ergebnisZahl][0];// Ermittelt die Eigenschaft (Gerade/Ungerade) der geworfenen Zahl
         boolean ergebnisFarbe = felder[ergebnisZahl][1];// Ermittelt die Eigenschaft (Farbe) der geworfenen Zahl
-
+        gewinn = 0;
         if (kriteriumZahl == 0) // Fall 1: Keine Einzelzahl-Wette aktiv 
         {
             if (kriteriumGerade == ergebnisGerade && kriteriumFarbe == ergebnisFarbe
