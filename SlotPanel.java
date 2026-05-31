@@ -199,9 +199,6 @@ public class SlotPanel extends CasinoGUI
         // Drehen-Button ActionListener
         drehenButton.addActionListener(e ->
         {
-            sound.spinEffekt();
-            
-            // Einsatz aus Slider lesen (try-catch fuer zukuenftige Textfeld-Nutzung)
             int slotEinsatzTemp;
             try
             {
@@ -213,12 +210,13 @@ public class SlotPanel extends CasinoGUI
                 return;
             }
 
-            // Spiellogik ausfuehren: prueft Einsatz und berechnet Ergebnis
             if (!slot.spielen(slotEinsatzTemp))
             {
                 gewinnLabel.setText("Ungueltiger Einsatz!");
                 return;
             }
+
+            sound.spinEffekt();
 
             // Debug-Ausgabe der Slot-Ergebnisse in der Konsole
             System.out.println("Slot1: " + slot.getSlot1()
@@ -233,7 +231,10 @@ public class SlotPanel extends CasinoGUI
             // Buff-Multiplikator VOR der Animation merken, da Buffs sich
             // waehrend der Laufzeit aendern koennten
             int gewinnMultiplikator = 1;
-            if (buffManager.isDoubleUpAktiv()) gewinnMultiplikator *= 2;
+            if (buffManager.isDoubleUpAktiv()) 
+            {
+                gewinnMultiplikator *= 2;
+            }
 
             // Button sperren und Animation der drei Walzen starten
             // (Walze 2 verzoegert um 400 ms, Walze 3 um 800 ms)
@@ -254,19 +255,27 @@ public class SlotPanel extends CasinoGUI
                 {
                     // DoubleUp: verdoppelt den Grundgewinn
                     if (finalMulti > 1)
+                    {
                         bonus += slot.getGewinn() * (finalMulti - 1);
+                    }
 
                     // Lucky7: dreifacher Bonus wenn eine 7 auf einer Walze liegt
                     if (buffManager.isLucky7Aktiv()
                             && (slot.getSlot1() == 7 || slot.getSlot2() == 7 || slot.getSlot3() == 7))
+                    {
                         bonus += slot.getGewinn() * 2;
+                    }
 
                     // JackpotBoost: verdoppelt bei echtem 777-Jackpot
                     if (buffManager.isJackpotBoostAktiv() && slot.super7IchKaufDasKasino())
+                    {
                         bonus += slot.getGewinn();
+                    }
                 }
                 if (bonus > 0) spieler.changeKontostand(bonus);
-                buffManager.slotRundeGespielt();
+                {
+                    buffManager.slotRundeGespielt();
+                }
 
                 // UI nach Runde aktualisieren 
                 kontoLabel.setText("Kontostand: " + spieler.getKontostand() + "$");
@@ -319,6 +328,10 @@ public class SlotPanel extends CasinoGUI
      */
     private void konfettiAnimation()
     {
+        if (konfettiTimer != null)
+        {
+            konfettiTimer.stop();    
+        }
         konfettiList.clear();
         for (int i = 0; i < 100; i++)
         {
@@ -338,7 +351,13 @@ public class SlotPanel extends CasinoGUI
         {
             konfettiAktiv = false;
             konfettiList.clear();
-        });
+            if (konfettiTimer != null) 
+            {
+                konfettiTimer.stop();
+            }
+            repaint();
+        }
+        );
         stopTimer.setRepeats(false);
         stopTimer.start();
 
@@ -349,9 +368,14 @@ public class SlotPanel extends CasinoGUI
             for (int[] k : konfettiList)
             {
                 k[1] += k[2]; // y-Position um Geschwindigkeit erhoehen
-                if (k[1] > getHeight()) k[1] = -20; // oben wieder einsetzen
+                if (k[1] > getHeight()) 
+                {
+                    k[1] = -20; // oben wieder einsetzen
+                }
             }
-        });
+            repaint();
+        }
+        );
         konfettiTimer.start();
     }
 

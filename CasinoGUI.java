@@ -51,8 +51,14 @@ public abstract class CasinoGUI extends JPanel
     {
         BufferedImage image = null;// Initialisiert das Bild-Objekt mit null
         URL imageURL = getClass().getClassLoader().getResource(path); // Sucht den exakten URL-Pfad der Datei über den ClassLoader (sucht im Ressourcen-Ordner des Projekts)
-        try { image = ImageIO.read(imageURL); } // Versucht, Bilddatei über ermittelte URL einzulesen
-        catch (Exception e) { e.printStackTrace(); } // Fängt Fehler ab (z.B. Datei nicht gefunden) und gibt den Fehlerpfad in der Konsole aus
+        try 
+        { 
+            image = ImageIO.read(imageURL);
+        } // Versucht, Bilddatei über ermittelte URL einzulesen
+        catch (Exception e) 
+        {
+            e.printStackTrace();
+        } // Fängt Fehler ab (z.B. Datei nicht gefunden) und gibt den Fehlerpfad in der Konsole aus
         return image; // Gibt das geladene Bild (oder wenn ein Fehler auftritt null) zurück
     }
 

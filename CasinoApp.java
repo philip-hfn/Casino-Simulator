@@ -32,7 +32,10 @@ public class CasinoApp implements HubPanel.ScreenSwitcher
             // Setzt den Look-and-Feel fuer ein einheitliches Design
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         }
-        catch (Exception e) { e.printStackTrace(); }
+        catch (Exception e) 
+        {
+            e.printStackTrace();
+        }
 
         // Startet die Applikation im Event-Dispatch-Thread der Swing-Bibliothek
         SwingUtilities.invokeLater(() -> new CasinoApp(1920, 1080));

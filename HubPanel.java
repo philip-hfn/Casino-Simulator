@@ -203,7 +203,7 @@ public class HubPanel extends CasinoGUI
                 "   - Lucky Spin - Roulette +50% (5 Runden, 600$)\n" +
                 "   - Double Up - naechster Slot x2 (1 Runde, 1000$)\n\n" +
                 "Mit 'Back' kommst du jederzeit zum Hub zurueck."
-            );
+        );
         anleitung.setFont(new Font("Arial", Font.PLAIN, 14));
         anleitung.setEditable(false);
         anleitung.setLineWrap(true);
@@ -229,7 +229,7 @@ public class HubPanel extends CasinoGUI
                 "Geld zu gewinnen - sondern riskante Unterhaltung\n" +
                 "mit realer Verlustgefahr.\n\n" +
                 "Spiele verantwortungsvoll."
-            );
+        );
         hinweis.setFont(new Font("Arial", Font.PLAIN, 14));
         hinweis.setEditable(false);
         hinweis.setLineWrap(true);
@@ -264,14 +264,16 @@ public class HubPanel extends CasinoGUI
 
         // Schließt den Shop, wenn der Benutzer auf die abgedunkelte Flaeche außerhalb des ShopPanels klickt
         shopOverlay.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e)
             {
-                @Override
-                public void mouseClicked(java.awt.event.MouseEvent e)
+                if (!shopPanel.getBounds().contains(e.getPoint()))
                 {
-                    if (!shopPanel.getBounds().contains(e.getPoint()))
-                        closeShop();
+                    closeShop();
                 }
-            });
+            }
+        });
 
         //Shopfenster
         shopPanel = new JPanel(null);
@@ -366,28 +368,29 @@ public class HubPanel extends CasinoGUI
         {
             // Starter- und Classic-Paket werfen absichtlich eine Fehlermeldung aus
             kaufBtn.addActionListener(e ->
-                    JOptionPane.showMessageDialog(
-                        this,
-                        "Keine Karte hinterlegt!\nBitte hinterlege zuerst eine Zahlungsmethode.",
-                        "Fehler",
-                        JOptionPane.ERROR_MESSAGE
-                    )
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Keine Karte hinterlegt!\nBitte hinterlege zuerst eine Zahlungsmethode.",
+                    "Fehler",
+                    JOptionPane.ERROR_MESSAGE
+                )
             );
         }
         else
         {
             // Das Premium Paket (Index 2) funktioniert als "Cheat" und gibt dem Spieler sofort 5000$ 
             kaufBtn.addActionListener(e ->
-                    {
-                        spieler.changeKontostand(5000);// Erhöht den Kontostand des Spielers um 5000
-                        refreshKontostand();// Aktualisiert die Anzeige direkt im Menü
-                        JOptionPane.showMessageDialog(
-                            this,
-                            "✅ Zahlung erfolgreich!\n5.000$ wurden deinem Konto gutgeschrieben.\nNeuer Kontostand: " + spieler.getKontostand() + "$",
-                            "Zahlung erfolgreich",
-                            JOptionPane.INFORMATION_MESSAGE
-                        );
-                });
+            {
+                spieler.changeKontostand(5000);// Erhöht den Kontostand des Spielers um 5000
+                refreshKontostand();// Aktualisiert die Anzeige direkt im Menü
+                JOptionPane.showMessageDialog(
+                    this,
+                    "✅ Zahlung erfolgreich!\n5.000$ wurden deinem Konto gutgeschrieben.\nNeuer Kontostand: " + spieler.getKontostand() + "$",
+                    "Zahlung erfolgreich",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+                );
         }
     }
 
